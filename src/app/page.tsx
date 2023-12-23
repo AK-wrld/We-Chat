@@ -1,13 +1,15 @@
 "use client";
-import React, { useEffect } from "react";
-import {db} from '../../services/firebase.config'
+import { useRouter } from "next/navigation";
+import React, {useState } from "react";
+
 const App = () => {
-  useEffect(() => {
-    console.log(db)
-  }
-  , [])
-  return <div>Hello world</div>;
+  const router = useRouter()
+  const [authToken,isAuth] = useState(false)
+ return <>
+ {authToken ? router.push("/dashboard") : router.push("/auth/login")}
+ </>
 };
-export default App
+
+export default App;
 
 

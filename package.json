@@ -9,13 +9,20 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.15.1",
+    "@mui/styled-engine-sc": "^6.0.0-alpha.9",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard": "^17.1.0",
     "firebase": "^10.7.1",
+    "framer-motion": "^10.16.16",
     "next": "14.0.4",
     "prettier": "^3.1.1",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-hook-form": "^7.49.2",
+    "react-material-ui-carousel": "^3.4.2"
   },
   "devDependencies": {
     "@types/node": "^20",
