@@ -1,7 +1,7 @@
-export type TUser = {
-    id: string;
-    name: string,
-    age: number,
-    phone: string,
-    timestamp: Date,
+export type TAuthData = {
+    accessToken: string;
+    displayName: string,
+    photoUrl: string,
+    email: string,
+    phone?: string
 }

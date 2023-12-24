@@ -3,14 +3,14 @@ import React from 'react'
 import { StyledGrid } from '../../../../../StyledComponents/Styled'
 import { Grid } from '@mui/material'
 import ImgCarousel from '../../../../../Components/LoginComponents/ImgCarousel'
-import SignupPage from '../../../../../Components/LoginComponents/SignupPage';
+import OtpPage from '../../../../../Components/LoginComponents/OtpPage';
 
-const Signup = () => {
+const VerifyOTP = () => {
   return (
     <>
      <Grid container>
   <Grid item xs={4} >
-    <SignupPage/>
+    <OtpPage/>
   </Grid>
   <StyledGrid item xs={8}>
     <ImgCarousel/>
@@ -20,4 +20,4 @@ const Signup = () => {
   )
 }
 
-export default Signup
+export default VerifyOTP

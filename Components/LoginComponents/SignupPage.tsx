@@ -1,26 +1,24 @@
-import React, { useEffect } from 'react'
+"use client";
+import React, { useEffect, useState } from 'react'
 import {easeInOut, motion, useAnimation} from 'framer-motion'
-import { ErrorSpan, StyleButton, StyledSubTitle, StyledText, StyledTitle } from '../../StyledComponents/Styled'
+import {StyleButton, StyledSubTitle, StyledText, StyledTitle } from '../../StyledComponents/Styled'
 import Stack from '@mui/material/Stack';
-import { useForm, SubmitHandler } from "react-hook-form"
-import { Avatar, FormControl, Input, InputLabel } from '@mui/material';
-import { text, title } from '../../StyledComponents/Global';
+import { Avatar, FormControl} from '@mui/material';
+import { text} from '../../StyledComponents/Global';
 import Link from 'next/link';
 import GoogleIcon from '@mui/icons-material/Google';
-type Inputs = {
-  phoneNumber: string
-  password: string
-  confirmPassword: string
-}
-const LoginPage = () => {
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-      } = useForm<Inputs>()
-      const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data)
-      const controls = useAnimation();
+import { MuiPhone } from './MuiPhone';
+import {signInWithPopup } from 'firebase/auth';
+import { auth, provider } from '../../services/firebase.config';
+import { useRouter } from 'next/navigation';
+import {sendOtp } from '../../Controllers/Controller';
 
+
+const LoginPage = () => {
+      const router = useRouter()
+      const controls = useAnimation();
+      const [muiPhone, setMuiPhone] = useState("+91");
+      
       useEffect(() => {
         const flickerAnimation = async () => {
           await controls.start({
@@ -38,9 +36,29 @@ const LoginPage = () => {
     
         flickerAnimation();
       }, [controls]);
+
+      const handleGoogleSignIn = () => {
+        signInWithPopup(auth,provider).then((data)=> {
+          router.push('/dashboard')
+          
+        })
+      }
+
+      const handleOtp = async(ev: React.MouseEvent<HTMLButtonElement, MouseEvent>)=> {
+        ev.preventDefault()
+        await sendOtp(muiPhone).then((res)=> {
+          if(res.success) {
+            router.push('/auth/verifyOtp')
+          }
+          else {
+            alert(res.error)
+            router.push('/dashboard')
+          }
+        })        
+      }
      
   return (
-    <Stack style={{height:"100vh","alignItems":"center",justifyContent:"center"}} spacing={5}>
+    <Stack style={{height:"100vh","alignItems":"center",justifyContent:"center",position:"relative"}} spacing={5}>
       <StyledTitle as={motion.div} initial={{ opacity: 0, y: "50%" }} animate={controls}>
     We Chat
     </StyledTitle>
@@ -56,37 +74,19 @@ const LoginPage = () => {
       }}>
     <StyledSubTitle>Signup</StyledSubTitle>
       <StyledText>Signup using Google</StyledText>
-      <Avatar sx={{ bgcolor: text,cursor:"pointer",marginBottom:"20px" }}><GoogleIcon/></Avatar>
+      <Avatar onClick={handleGoogleSignIn} sx={{ bgcolor: text,cursor:"pointer",marginBottom:"20px" }}><GoogleIcon/></Avatar>
      <p style={{marginBottom:"40px"}}>OR</p>
       <Stack spacing={5} style={{height:"40vh"}}>
-      <form onSubmit={handleSubmit(onSubmit)} style={{display:"flex",width:"100%",height:"100%",flexDirection: "column",justifyContent: "space-evenly",alignItems:"center",marginTop:"-50px"}}>
+      <form style={{display:"flex",width:"100%",height:"100%",flexDirection: "column",justifyContent: "space-evenly",alignItems:"center",marginTop:"-50px"}}>
         <FormControl>
-      <InputLabel htmlFor="phoneNumber" style={{color:title}}>Phone Number</InputLabel>
-      <Input id='phoneNumber' {...register("phoneNumber")} style={{minWidth:"250px"}}/>
-
+        <MuiPhone value={muiPhone} onChange={setMuiPhone} style={{minWidth:"250px"}}/>
         </FormControl>
-
-      {/* include validation with required or other standard HTML validation rules */}
-      <FormControl>
-      <InputLabel htmlFor="password" style={{color:title}}>Password</InputLabel>
-      <Input {...register("password", { required: true })} type="password" style={{minWidth:"250px"}}/>
-
-      </FormControl>
-      {/* errors will return when field validation fails  */}
-      {errors.password && <ErrorSpan>This field is required</ErrorSpan>}
-      <FormControl>
-      <InputLabel htmlFor="confirmPassword" style={{color:title}}>Confirm Password</InputLabel>
-      <Input {...register("confirmPassword", { required: true })} type="password" style={{minWidth:"250px"}}/>
-
-      </FormControl>
-      {/* errors will return when field validation fails  */}
-      {errors.password && <ErrorSpan>This field is required</ErrorSpan>}
-      <StyleButton type="submit">Signup</StyleButton>
+      <StyleButton type="submit" onClick={(ev)=>handleOtp(ev)}>Signup</StyleButton>
     <p>Already have an Account? <Link href={"/auth/login"}>Login</Link></p>
     </form>
       </Stack>
     </motion.div>
-      
+      <div id="recaptcha" style={{position:"absolute",bottom:"10%",right:"10%"}}></div>
     </Stack>
   )
 }

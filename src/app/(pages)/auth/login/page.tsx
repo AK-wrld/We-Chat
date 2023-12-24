@@ -9,10 +9,10 @@ const Login = () => {
   return (
     <>
      <Grid container>
-  <Grid item xs={6} >
+  <Grid item xs={4} >
     <LoginPage/>
   </Grid>
-  <StyledGrid item xs={6}>
+  <StyledGrid item xs={8}>
     <ImgCarousel/>
   </StyledGrid>
 </Grid>
