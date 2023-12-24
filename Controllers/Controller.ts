@@ -1,6 +1,7 @@
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { PhoneNumberUtil } from 'google-libphonenumber';
 import { auth } from '../services/firebase.config';
+import { toast } from 'react-toastify';
 const phoneUtil = PhoneNumberUtil.getInstance();
 export const isPhoneValid = (phone: string) => {
     try {
@@ -28,3 +29,45 @@ export const isPhoneValid = (phone: string) => {
       return {success:false,error:"Something went wrong"}
     }
   }
+export const setToast = (message:string,type:string) => {
+  console.log(message)
+  switch (type) {
+    case "error":
+      toast.error(message,{
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+      });
+      break;
+    case "success":
+      toast.success(message,{
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+      })
+      break
+    default:
+      toast(message,{
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+          })
+      break;
+  }
+  
+}

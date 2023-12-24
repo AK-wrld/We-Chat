@@ -6,6 +6,7 @@ import {FormControl, Input, InputLabel} from '@mui/material';
 import Link from 'next/link';
 import React,{useEffect, useState } from 'react';
 import { title } from 'process';
+import { setToast } from '../../Controllers/Controller';
 const OtpPage = () => {
   const controls = useAnimation();
   const [otp,setOtp] = useState("")
@@ -38,7 +39,9 @@ const OtpPage = () => {
       const data = await confirmationResult.signInWithCredential(otp)
       console.log(data)
     } catch (error) {
-      alert(error)
+      console.log(error)
+        setToast("Cannot verify OTP","error")
+      
     }
   }
   return (

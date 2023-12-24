@@ -10,7 +10,7 @@ import { MuiPhone } from './MuiPhone';
 import {signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../../services/firebase.config';
 import { useRouter } from 'next/navigation';
-import { sendOtp } from '../../Controllers/Controller';
+import { sendOtp, setToast } from '../../Controllers/Controller';
 
 const LoginPage = () => {
       const router = useRouter()
@@ -47,13 +47,18 @@ const LoginPage = () => {
             router.push('/auth/verifyOtp')
           }
           else {
-            alert(res.error)
-            router.push('/dashboard')
+            if(res.error) {
+              setToast(res.error,"error")
+            }
+            
           }
         })        
       }
       
   return (
+    <>
+    
+   
     <Stack style={{height:"100vh","alignItems":"center",justifyContent:"center",position:"relative"}} spacing={5}>
       <StyledTitle as={motion.div} 
       initial={{ opacity: 0, y: "50%" }} animate={controls}>
@@ -85,6 +90,8 @@ const LoginPage = () => {
     </motion.div>
     <div id="recaptcha" style={{position:"absolute",bottom:"10%",right:"10%"}}></div>
     </Stack>
+    
+</>
   )
 }
 
