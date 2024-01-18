@@ -5,6 +5,8 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from "../../context/AuthContext";
+import { ProfileProvider } from "../../context/ProfileContext";
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -20,11 +22,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+      <ProfileProvider>
+        <AuthProvider>
+        
         <div style={{"display":"flex","width":"100%"}}>
       <ToastContainer/>
         {children}
         </div>
-       
+        
+        </AuthProvider>
+        </ProfileProvider>
         </body>
     </html>
   )
