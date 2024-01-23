@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import { Box, Typography } from "@mui/material";
 import Footer from "./Footer";
@@ -6,6 +6,9 @@ import EmojiPicker from "emoji-picker-react";
 import { useProfile } from "../../context/ProfileContext";
 const ChatScreen = () => {
     const {bgColor,bgImage,bgType,sendercolor,recieverColor} = useProfile();
+    useEffect(()=> {
+      console.log({bgColor,bgImage,bgType,sendercolor,recieverColor})
+    },[bgColor,bgImage,bgType,sendercolor,recieverColor])
   const [openEmoji, setOpenEmoji] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const handleEmoji = (emoji: any) => {

@@ -7,7 +7,11 @@ import Link from 'next/link';
 import React,{useEffect, useState } from 'react';
 import { title } from 'process';
 import { setToast } from '../../Controllers/Controller';
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { db } from '../../services/firebase.config';
+import { useRouter } from 'next/navigation';
 const OtpPage = () => {
+  const router = useRouter()
   const controls = useAnimation();
   const [otp,setOtp] = useState("")
   useEffect(() => {
@@ -36,8 +40,27 @@ const OtpPage = () => {
       }
       
       console.log(confirmationResult)
-      const data = await confirmationResult.signInWithCredential(otp)
-      console.log(data)
+      confirmationResult.confirm(otp).then(async (result: { user: any; }) => {
+        // User signed in successfully.
+        const user = result.user;
+        console.log(user)
+        const docRef = doc(db, "user", user.uid);
+        const docSnap = await getDoc(docRef);
+        if(docSnap.exists()) {
+          router.push('/dashboard')
+        }
+        else {
+          
+          setDoc(docRef, {uid:user.uid,phone:user.phoneNumber,timestamp: serverTimestamp()}, { merge: true }); 
+          router.push('/profile')
+        }
+        // ...
+      }).catch((error: any) => {
+        // User couldn't sign in (bad verification code?)
+        // ...
+        console.log(error)
+        setToast("Cannot verify OTP","error")
+      });
     } catch (error) {
       console.log(error)
         setToast("Cannot verify OTP","error")

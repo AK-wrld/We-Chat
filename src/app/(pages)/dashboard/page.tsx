@@ -1,10 +1,12 @@
+"use client";
 import React from 'react'
 
 const Dashboard = () => {
+
   return (
-   <div>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit magni labore temporibus sunt necessitatibus culpa, excepturi dignissimos sapiente assumenda velit nam eligendi maiores molestiae, illum dicta aliquid dolor sint. Optio ad pariatur ea animi officia tenetur harum hic eum saepe architecto commodi ipsum nemo molestiae aliquam debitis delectus, consequatur aut amet minus officiis libero quos obcaecati et nobis. Vel ipsa, facilis possimus ipsam reprehenderit delectus architecto ratione cupiditate sequi deserunt distinctio culpa molestias nulla tempora natus, unde praesentium fugit eaque enim, repellat laudantium corporis. Aperiam voluptate officiis debitis quos dolorum iure saepe eligendi veritatis. Nemo illo asperiores eum maiores at quibusdam iure molestias delectus laboriosam nostrum unde magni modi architecto, nihil quia iste ipsa? Facere ex ipsa ut consequuntur velit saepe vero dolor, qui similique voluptate fugiat? Consequatur nemo ut quaerat incidunt rem, soluta doloremque ducimus iure. Dolorum quaerat iusto accusantium, eos omnis asperiores impedit sunt magnam laudantium commodi voluptatum exercitationem consequuntur? Adipisci, possimus nam? Quaerat nam ipsa nobis explicabo non dolore vitae vel quia alias ullam earum aliquam atque pariatur iste incidunt sed unde iusto, excepturi itaque eum. Cumque voluptatum id architecto voluptas quia voluptatibus veritatis excepturi culpa nihil corrupti laboriosam dolore ipsa eaque repellendus, quis quae, reprehenderit necessitatibus nemo eos. Tempora eum quibusdam ducimus fugiat corrupti obcaecati voluptates expedita voluptate dignissimos soluta possimus fugit impedit excepturi debitis repudiandae deserunt delectus incidunt aperiam optio, atque ullam esse harum magnam aspernatur. Ducimus animi consequuntur est. Vel, sed minima laudantium velit obcaecati atque vero nihil, tenetur tempora, et asperiores culpa. Optio architecto ipsum nemo hic vel reprehenderit? Explicabo maxime nostrum debitis ipsum labore quod provident? Maxime adipisci reprehenderit officiis numquam necessitatibus id, quo animi dignissimos laboriosam sapiente nobis hic, recusandae eveniet voluptas nisi odio dolor? Ipsa molestias reiciendis dolorem natus ipsum blanditiis excepturi adipisci odit. Recusandae labore in eligendi quidem autem!
-    </div>
+    <>
+    <p>hello</p>
+    </>
   )
 }
 

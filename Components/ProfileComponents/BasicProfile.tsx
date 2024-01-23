@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React,{useEffect} from "react";
 import { StyledLabel, StyledSubTitle } from "../../StyledComponents/Styled";
 import {  FormControlLabel, Grid, Input, Radio, RadioGroup, } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -12,7 +12,10 @@ import { useAuth } from "../../context/AuthContext";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../../services/firebase.config";
 import dayjs from "dayjs";
-
+import { PhoneNumberUtil } from 'google-libphonenumber';
+import { MuiPhone } from '../LoginComponents/MuiPhone';
+import { isPhoneValid, setToast } from "../../Controllers/Controller";
+const phoneUtil = PhoneNumberUtil.getInstance();
 type Props = {
   handleNext: () => void;
   handleBack: () => void;
@@ -22,13 +25,29 @@ type Props = {
 }
 const BasicProfile = ({handleNext,handleBack,handleReset,activeStep,steps}:Props) => {
   const {firstName,setFirstName,lastName,setLastName,email,setEmail,phone,setPhone,dob,setDob,gender,setGender} = useProfile();
+  const [muiPhone, setMuiPhone] = React.useState('');
+  useEffect(()=> {
+    if(phone) {
+
+      const number = phoneUtil.parseAndKeepRawInput(phone)
+      console.log(number.getCountryCode());
+      setMuiPhone(phoneUtil.format(number, 0))
+    }
+  },[phone])
   const {uid} = useAuth();
   const handleSubmit = () => {
-    const docRef = doc(db, "user", uid);
-    
-    setDoc(docRef, { email,firstName,lastName,phone,dob: dob?.format("YYYY-MM-DD"),gender,timestamp: serverTimestamp() }, { merge: true });
-    console.log(firstName,lastName,email,phone,dob?.format("YYYY-MM-DD"))
-    handleNext();
+    if(!isPhoneValid(muiPhone)) {
+      setToast("Invalid Phone Number","error")
+      
+    }
+    else {
+
+      const docRef = doc(db, "user", uid);
+      setPhone(muiPhone)
+      setDoc(docRef, { email,firstName,lastName,phone:muiPhone,dob: dob?.format("YYYY-MM-DD"),gender,timestamp: serverTimestamp() }, { merge: true });
+      console.log(firstName,lastName,email,phone,dob?.format("YYYY-MM-DD"))
+      handleNext();
+    }
   }
   return (
     <>
@@ -75,7 +94,7 @@ const BasicProfile = ({handleNext,handleBack,handleReset,activeStep,steps}:Props
           </Grid>
           <Grid item xs={6}>
             
-              <StyledLabel htmlFor="phone">Phone</StyledLabel>
+              {/* <StyledLabel htmlFor="phone">Phone</StyledLabel>
               <Input
                 id="phone"
                 aria-describedby="my-helper-text"
@@ -84,7 +103,8 @@ const BasicProfile = ({handleNext,handleBack,handleReset,activeStep,steps}:Props
                 style={{minWidth:"80%"}}
                 defaultValue={phone}
                 onChange={(event) => setPhone(event.target.value)}
-              />
+              /> */}
+              <MuiPhone value={muiPhone} onChange={(muiPhone)=>setMuiPhone(muiPhone)} style={{minWidth:"250px"}}/>
             {/* </FormControl> */}
           </Grid>
           <Grid item xs={6}>
@@ -104,7 +124,7 @@ const BasicProfile = ({handleNext,handleBack,handleReset,activeStep,steps}:Props
   <StyledLabel >Gender</StyledLabel>
   <RadioGroup
     // eslint-disable-next-line no-unneeded-ternary
-    value={gender?gender:'M'}
+    value={gender}
     name="radio-buttons-group"
     onChange={(event) => setGender(event.target.value)}
   >

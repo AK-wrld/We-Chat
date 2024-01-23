@@ -32,7 +32,7 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [uid, setUid] = useState("");
-  const {setFirstName,setLastName,setEmail,setPhone,setDob,setBio,setDp,setLastActive,setGender} = useProfile();
+  const {setFirstName,setLastName,setEmail,setPhone,setDob,setBio,setDp,setLastActive,setGender,setSenderColor,setRecieverColor,setBgType,setBgImage,setBgColor} = useProfile();
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async(authUser) => {
       setLoading(true);
@@ -58,16 +58,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setLastActive(timestamp)
           setGender(gender)
           setDoc(docRef, {timestamp: serverTimestamp()}, { merge: true }); 
+          const bgRef = doc(db,"backgrounds",uid)
+          const bgSnap = await getDoc(bgRef);
+          if(bgSnap.exists()){
+            const {sendercolor,recieverColor,bgType,bgColor,bgImage} = bgSnap.data();
+            console.log({sendercolor,recieverColor,bgType,bgColor,bgImage})
+            setSenderColor(sendercolor)
+            setRecieverColor(recieverColor)
+            setBgType(bgType)
+            if(bgType==='Aesthetic'){
+              setBgImage(bgImage)
+            }
+            else {
+              setBgColor(bgColor)
+            }
+          }
+
         } else {
 
-        const { email, displayName, photoURL} = authUser;
+        const { email, displayName, photoURL,phoneNumber} = authUser;
         let firstName = "";
         let lastName = "";
         if (displayName) {
           firstName = displayName?.split(" ")[0];
           lastName = displayName?.split(" ")[1];
         }
-          setDoc(docRef, { email,firstName,lastName,photoURL,timestamp: serverTimestamp(),uid,bio:"" }, { merge: true });
+          setDoc(docRef, { email,firstName,lastName,photoURL,timestamp: serverTimestamp(),uid,bio:"",phone:phoneNumber,gender:"M" }, { merge: true });
         }
         setLoading(false);
       } else {
@@ -76,7 +92,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     });
 
     return () => unsubscribe();
-  }, [setBio, setDob, setDp, setEmail, setFirstName, setLastName, setPhone,setLastActive]);
+  }, [setBio, setDob, setDp, setEmail, setFirstName, setLastName, setPhone, setLastActive, setGender]);
     
   return (
     <AuthContext.Provider value={{loading,uid }}>

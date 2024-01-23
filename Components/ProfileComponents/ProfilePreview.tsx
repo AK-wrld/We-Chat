@@ -51,9 +51,9 @@ const ProfilePreview = () => {
                 </Grid>
             </Grid>
            {
-            gender && <Grid item xs={12} sx={{display:"flex",alignItems:"center",mt:2}}>
-            <StyledLabel sx={{fontSize:"14px !important"}}>Gender</StyledLabel>
-                <Image src={`/${gender}.png`} width={150} height={150} alt='gender'/>
+            gender && <Grid item xs={12} sx={{display:"flex",alignItems:"center",mt:2,justifyContent:"center"}}>
+            {/* <StyledLabel sx={{fontSize:"14px !important"}}>Gender</StyledLabel> */}
+                <Image src={`/${gender}.png`} width={150} height={150} alt='gender' />
             </Grid>
            } 
         </Grid>
