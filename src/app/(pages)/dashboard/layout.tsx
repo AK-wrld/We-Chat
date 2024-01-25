@@ -14,20 +14,78 @@ import Contacts from '../../../../Components/Dashboard/Contacts';
 import Groups from '../../../../Components/Dashboard/Groups';
 import Calls from '../../../../Components/Dashboard/Calls';
 import { StyledGrid } from '../../../../StyledComponents/Styled';
+import { useAuth } from '../../../../context/AuthContext';
+import { collection, doc, getDoc, onSnapshot, query, where } from 'firebase/firestore';
+import  { db } from '../../../../services/firebase.config';
+import { useProfile } from '../../../../context/ProfileContext';
+import { capitalizeFirstLetter} from '../../../../Controllers/Controller';
+import { TAuthUser } from '../../../../Types/user';
 type LayoutProps = {
     children: ReactNode;
   };
+
 const Layout = ({children}:LayoutProps) => {
+
+
+  const {uid} =useAuth()
+  const {setSenderColor,setRecieverColor,setBgType,setBgImage,setBgColor} = useProfile()
     const [value, setValue] = useState(0);
   const [open,setOpen] = useState(false);
   const [searchVal,setSearchVal] = useState('');
+  const [searchContactArr,setSearchContactArr] = useState<TAuthUser[]>([])
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    console.log(newValue)
+    // console.log(newValue)
     setValue(newValue);
   };
-  useEffect(()=> {
-    console.log(open)
-  },[open])
+  useEffect(() => {
+    if(uid) {
+
+      const docRef = doc(db,"backgrounds",uid)
+      getDoc(docRef).then((doc) => {
+        if(doc.exists()){
+          const data = doc.data();
+          if(data){
+            setSenderColor(data.sendercolor)
+            setRecieverColor(data.recieverColor)
+            setBgType(data.bgType)
+            if(data.bgType==='Aesthetic'){
+              setBgImage(data.bgImage)
+            }
+            else {
+              setBgColor(data.bgColor)
+            }
+          }
+        }
+      }
+      )
+    }
+    }
+  ,[setBgColor, setBgImage, setBgType, setRecieverColor, setSenderColor, uid])
+  useEffect(() => {
+    if(value===0) {
+
+      const userRef = collection(db, "user");
+      const val = capitalizeFirstLetter(searchVal);
+    
+      const q = query(userRef, where("firstName", "==", val), where("uid", "!=", uid));
+    
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const newData: any[] = [];
+    
+        snapshot.forEach((doc) => {
+          newData.push({ id: doc.id, ...doc.data() });
+        });
+    
+        setSearchContactArr(newData);
+      });
+    
+      return () => {
+        unsubscribe(); // Unsubscribe when the component unmounts
+      };
+    }
+  }, [searchVal, uid,value]);
+
+
   return (
     <>
         <Grid container>
@@ -48,15 +106,15 @@ const Layout = ({children}:LayoutProps) => {
         <Tab icon={<CallIcon />} label="CALL LOGS" value={2} />
       </Tabs>
       <TabPanel value="0">
-        <SearchBox open={open} value={value} setOpen={setOpen}/>
+        <SearchBox open={open} value={value} setOpen={setOpen} searchContactArr={searchContactArr}/>
         <Contacts/>
       </TabPanel>
       <TabPanel value="1">
-      <SearchBox open={open} value={value} setOpen={setOpen}/>
+      <SearchBox open={open} value={value} setOpen={setOpen} searchContactArr={searchContactArr}/>
         <Groups/>
       </TabPanel>
       <TabPanel value="2">
-      <SearchBox open={open} value={value} setOpen={setOpen}/>
+      <SearchBox open={open} value={value} setOpen={setOpen} searchContactArr={searchContactArr}/>
        <Calls/>
       
       </TabPanel>

@@ -45,7 +45,7 @@ const ChatScreen = () => {
         <Box sx={{ width: "100%", position: "relative" }}>
           <Navbar />
         </Box>
-        <Box sx={{ height: "85vh", overflowY: "scroll" }}>
+        <Box sx={{ height: "85vh", overflowY: "scroll",overflowX:"hidden" }}>
           {messages ? (
             messages.map((message, index) =>
               message.sender === "me" ? (
@@ -69,14 +69,14 @@ const ChatScreen = () => {
                       minWidth:"60px"
                     }}
                   >
-                    <Typography style={{ fontSize: "14px", color: "white" }}>
+                    <Typography style={{ fontSize: "14px", color: "black" }}>
                       {message.message}
                     </Typography>
                     {/* add timestamp value at the bottom right  */}
                     <Typography
                       style={{
                         fontSize: "10px",
-                        color: "white",
+                        color: "black",
                         textAlign: "right",
                       }}
                     >
@@ -104,13 +104,13 @@ const ChatScreen = () => {
                       minWidth:"60px"
                     }}
                   >
-                    <Typography style={{ fontSize: "14px", color: "black" }}>
+                    <Typography style={{ fontSize: "14px", color: "white" }}>
                       {message.message}
                     </Typography>
                     <Typography
                       style={{
                         fontSize: "10px",
-                        color: "black",
+                        color: "white",
                         textAlign: "right",
                       }}
                     >

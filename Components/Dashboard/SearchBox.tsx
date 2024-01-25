@@ -3,17 +3,19 @@ import {motion} from 'framer-motion'
 import SearchContact from "./SearchContact";
 import CloseIcon from '@mui/icons-material/Close';
 import { Box } from "@mui/material";
+import { TAuthUser } from "../../Types/user";
 type Props = {
   open: boolean;
   value: number;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  searchContactArr: TAuthUser[]
 };
-const SearchBox = ({ open,value,setOpen }: Props) => {
+const SearchBox = ({ open,value,setOpen,searchContactArr }: Props) => {
     const variants = {
         open: { opacity: 1, height: "70vh" },
         closed: { opacity: 0, height: "0vh" }
       };
-      
+
   return (
     <>
       <motion.div
@@ -34,7 +36,10 @@ const SearchBox = ({ open,value,setOpen }: Props) => {
         <CloseIcon sx={{position:"absolute",right:0,cursor:"pointer"}} onClick={()=>setOpen(false)}/>
         <Box sx={{mt:3,height:"100%"}}>
 
-        {open && <SearchContact value={value}/>}
+        {open && searchContactArr.length!==0?
+        searchContactArr.map((contact,index)=> {
+          return <SearchContact key={contact.uid} contact={contact} value={value}/>
+        }):null}
         </Box>
         
       </motion.div>

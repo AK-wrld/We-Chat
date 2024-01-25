@@ -71,3 +71,7 @@ export const setToast = (message:string,type:string) => {
   }
   
 }
+export function capitalizeFirstLetter(str:string) {
+  str = str.toLowerCase()
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

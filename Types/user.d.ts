@@ -6,12 +6,13 @@ export type TAuthData = {
     phone?: string
 }
 export type TAuthUser = {
-    email: string | null;
-    firstName: string | null;
-    lastName: string | null;
-    photoURL: string | null;
-    uid: string | null;
-    phone: string | null;
-    dob:string | null;
-    
+    email: string ;
+    firstName: string ;
+    lastName: string ;
+    photoURL: string ;
+    uid: string ;
+    phone: string ;
+    dob:string ;
+    timestamp: Date;
+    uid:string
   };

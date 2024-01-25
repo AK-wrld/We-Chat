@@ -65,6 +65,7 @@ const PictureUpload = ({
             handleChange={handleChange}
             name="file"
             types={fileTypes}
+            // eslint-disable-next-line react/no-children-prop
             children={
               <Badge
                 overlap="circular"

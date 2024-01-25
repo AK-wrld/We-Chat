@@ -25,3 +25,4 @@ export const auth = getAuth(app)
 auth.languageCode = 'en';
 export const provider = new GoogleAuthProvider();
 export const bucket = getStorage(app)
+export default app

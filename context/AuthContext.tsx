@@ -11,9 +11,12 @@ import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useProfile } from "./ProfileContext";
 
 import dayjs from 'dayjs';
+import { useRouter } from "next/navigation";
 interface AuthContextProps {
   uid:string;
   loading: boolean;
+  fcmToken:string,
+  setFcmToken: React.Dispatch<React.SetStateAction<string>>;
 }
 
 interface AuthProviderProps {
@@ -23,6 +26,8 @@ interface AuthProviderProps {
 const AuthContext = createContext<AuthContextProps>({
   uid: "",
   loading: true,
+  fcmToken:"",
+  setFcmToken:()=>{}
 });
 
 export const useAuth = () => {
@@ -30,9 +35,11 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const router=useRouter()
   const [loading, setLoading] = useState(true);
   const [uid, setUid] = useState("");
-  const {setFirstName,setLastName,setEmail,setPhone,setDob,setBio,setDp,setLastActive,setGender,setSenderColor,setRecieverColor,setBgType,setBgImage,setBgColor} = useProfile();
+  const [fcmToken, setFcmToken] = useState('');
+  const {setFirstName,setLastName,setEmail,setPhone,setDob,setBio,setDp,setLastActive,setGender} = useProfile();
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async(authUser) => {
       setLoading(true);
@@ -58,21 +65,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setLastActive(timestamp)
           setGender(gender)
           setDoc(docRef, {timestamp: serverTimestamp()}, { merge: true }); 
-          const bgRef = doc(db,"backgrounds",uid)
-          const bgSnap = await getDoc(bgRef);
-          if(bgSnap.exists()){
-            const {sendercolor,recieverColor,bgType,bgColor,bgImage} = bgSnap.data();
-            console.log({sendercolor,recieverColor,bgType,bgColor,bgImage})
-            setSenderColor(sendercolor)
-            setRecieverColor(recieverColor)
-            setBgType(bgType)
-            if(bgType==='Aesthetic'){
-              setBgImage(bgImage)
-            }
-            else {
-              setBgColor(bgColor)
-            }
-          }
+     
 
         } else {
 
@@ -83,7 +76,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           firstName = displayName?.split(" ")[0];
           lastName = displayName?.split(" ")[1];
         }
+        setFirstName(firstName);
+          setLastName(lastName);
+          if(email) setEmail(email);
+          if(photoURL) setDp(photoURL)
+          if(phoneNumber) setPhone(phoneNumber)
           setDoc(docRef, { email,firstName,lastName,photoURL,timestamp: serverTimestamp(),uid,bio:"",phone:phoneNumber,gender:"M" }, { merge: true });
+          router.push('/profile')
         }
         setLoading(false);
       } else {
@@ -93,9 +92,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     return () => unsubscribe();
   }, [setBio, setDob, setDp, setEmail, setFirstName, setLastName, setPhone, setLastActive, setGender]);
-    
+      useEffect(()=> {
+    console.log(uid)
+  },[uid])
   return (
-    <AuthContext.Provider value={{loading,uid }}>
+    <AuthContext.Provider value={{loading,uid,fcmToken,setFcmToken }}>
       {children}
     </AuthContext.Provider>
   );

@@ -14,7 +14,7 @@ import { db } from "../../services/firebase.config";
 import dayjs from "dayjs";
 import { PhoneNumberUtil } from 'google-libphonenumber';
 import { MuiPhone } from '../LoginComponents/MuiPhone';
-import { isPhoneValid, setToast } from "../../Controllers/Controller";
+import { capitalizeFirstLetter, isPhoneValid, setToast } from "../../Controllers/Controller";
 const phoneUtil = PhoneNumberUtil.getInstance();
 type Props = {
   handleNext: () => void;
@@ -44,7 +44,9 @@ const BasicProfile = ({handleNext,handleBack,handleReset,activeStep,steps}:Props
 
       const docRef = doc(db, "user", uid);
       setPhone(muiPhone)
-      setDoc(docRef, { email,firstName,lastName,phone:muiPhone,dob: dob?.format("YYYY-MM-DD"),gender,timestamp: serverTimestamp() }, { merge: true });
+      const cFirstName = capitalizeFirstLetter(firstName)
+      const cLastName = capitalizeFirstLetter(lastName)
+      setDoc(docRef, { email,firstName:cFirstName,lastName:cLastName,phone:muiPhone,dob: dob?.format("YYYY-MM-DD"),gender,timestamp: serverTimestamp() }, { merge: true });
       console.log(firstName,lastName,email,phone,dob?.format("YYYY-MM-DD"))
       handleNext();
     }

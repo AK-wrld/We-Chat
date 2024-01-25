@@ -8,11 +8,16 @@ import Link from 'next/link';
 import GoogleIcon from '@mui/icons-material/Google';
 import { MuiPhone } from './MuiPhone';
 import {signInWithPopup } from 'firebase/auth';
-import { auth, provider } from '../../services/firebase.config';
+import { auth, db, provider } from '../../services/firebase.config';
 import { useRouter } from 'next/navigation';
 import { sendOtp, setToast } from '../../Controllers/Controller';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { useProfile } from '../../context/ProfileContext';
+import { useChat } from '../../context/ChatContext';
 
 const LoginPage = () => {
+  const {setSenderColor,setRecieverColor,setBgType,setBgImage,setBgColor} = useProfile()
+  const {setFriends,setFriendCount} = useChat()
       const router = useRouter()
       const controls = useAnimation();
       const [muiPhone, setMuiPhone] = useState("+91");
@@ -35,8 +40,40 @@ const LoginPage = () => {
       }, [controls]);
 
       const handleGoogleSignIn = () => {
-        signInWithPopup(auth,provider).then((data)=> {
-          router.push('/dashboard')
+        signInWithPopup(auth,provider).then(async (data)=> {
+          const {uid} = data.user
+         
+          console.log("login complete")
+          const friendRef = doc(db,"friends",uid)
+          const friendSnap = await getDoc(friendRef)
+          if(friendSnap.exists()) {
+            const {friendsArr,count} = friendSnap.data()
+            console.log(friendsArr)
+            setFriends(friendsArr)
+            setFriendCount(count)
+          }
+          else {
+            setDoc(friendRef,{friendsArr:[],count:0,user:uid},{merge:true})
+          }
+          const bgRef = doc(db,"backgrounds",uid)
+          const bgSnap = await getDoc(bgRef);
+          if(bgSnap.exists()){
+            const {sendercolor,recieverColor,bgType,bgColor,bgImage} = bgSnap.data();
+            console.log({sendercolor,recieverColor,bgType,bgColor,bgImage})
+            setSenderColor(sendercolor)
+            setRecieverColor(recieverColor)
+            setBgType(bgType)
+            if(bgType==='Aesthetic'){
+              setBgImage(bgImage)
+            }
+            else {
+              setBgColor(bgColor)
+            }
+            router.push('/dashboard')
+          }
+          else {
+            router.push('/profile')
+          }
           
         })
       }
