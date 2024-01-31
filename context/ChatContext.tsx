@@ -10,13 +10,21 @@ interface ChatContextType {
     setFriends: React.Dispatch<React.SetStateAction<string[]>>;
     friendCount: number;
     setFriendCount: React.Dispatch<React.SetStateAction<number>>;
+    blockedUsers: string[];
+    setBlockedUsers: React.Dispatch<React.SetStateAction<string[]>>;
+    isBlockedByArr: string[];
+    setIsBlockedBy: React.Dispatch<React.SetStateAction<string[]>>;
   }
 
   const ChatContext = createContext<ChatContextType>({
     friendsArr: [],
     setFriends: () => {},
     friendCount: 0,
-    setFriendCount:()=>{}
+    setFriendCount:()=>{},
+    blockedUsers:[],
+    setBlockedUsers:()=>{},
+    isBlockedByArr:[],
+    setIsBlockedBy:()=>{}
   });
 
 export const useChat = () => {
@@ -26,7 +34,8 @@ export const useChat = () => {
 export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const [friendsArr,setFriends] = useState<string[]>([])
   const [friendCount,setFriendCount] = useState(0)  
-
-  return <ChatContext.Provider value={{friendsArr,setFriends,friendCount,setFriendCount}}>{children}</ChatContext.Provider>;
+  const [blockedUsers,setBlockedUsers] = useState<string[]>([])
+  const [isBlockedByArr,setIsBlockedBy] = useState<string[]>([])
+  return <ChatContext.Provider value={{friendsArr,setFriends,friendCount,setFriendCount,blockedUsers,setBlockedUsers,isBlockedByArr,setIsBlockedBy}}>{children}</ChatContext.Provider>;
 
 };

@@ -1,65 +1,169 @@
 import React, { useEffect, useState } from 'react';
-import { Avatar, Box } from "@mui/material";
+import { Avatar, Box, Button } from "@mui/material";
 import { StyledText } from "../../StyledComponents/Styled";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
-import { motion, useAnimation } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import AddIcCallIcon from '@mui/icons-material/AddIcCall';
-import { TAuthUser } from '../../Types/user';
+import ChatIcon from '@mui/icons-material/Chat';
+import { doc, getDoc, onSnapshot, setDoc } from 'firebase/firestore';
+import { db } from '../../services/firebase.config';
 import { useChat } from '../../context/ChatContext';
-// import { useProfile } from '../../context/ProfileContext';
+import { socket } from '../../socket';
+import { useProfile } from '../../context/ProfileContext';
+import { useAuth } from '../../context/AuthContext';
+import type { TAuthUser } from '../../Types/user';
+import BlockIcon from '@mui/icons-material/Block';
+import { setToast } from '../../Controllers/Controller';
+
 type Props = {
-    value: number;
-    contact: TAuthUser
-}
-const SearchContact = ({value,contact}:Props) => {
-  
-  const [add, setAdd] = useState(false);
-  const controlsPersonAdd = useAnimation();
-  const controlsMarkEmailRead = useAnimation();
-  const {firstName,lastName,uid,photoURL} = contact
-  const {friendsArr} = useChat()
-  const [isFriend,setIsFriend] = useState(false)
+  value: number;
+  contact: TAuthUser;
+};
+
+const SearchContact = ({ value, contact }: Props) => {
+  const { uid: mUid } = useAuth();
+  const { firstName: mFirstName, lastName: mLastName,dp:mDp } = useProfile();
+  const { firstName, lastName, uid, photoURL,isBlocked } = contact;
+  const { friendsArr,setBlockedUsers } = useChat();
+  const [blockedStatus,setBlockedStatus] = useState(false)
   useEffect(()=> {
-    if(uid && friendsArr) {
-      if(friendsArr.includes(uid)) {
-        
-        setIsFriend(true)
+    if(isBlocked) {
+      setBlockedStatus(true)
+    }
+  }
+  ,[isBlocked])
+  // eslint-disable-next-line no-unused-vars
+  const [isFriend, setIsFriend] = useState(false);
+  const [isReqPending, setIsReqPending] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (uid && friendsArr) {
+      if (friendsArr.includes(uid)) {
+        setIsFriend(true);
+      } else {
+        let unsubscribe = () => {};
+        if (uid) {
+          const reqRef = doc(db, "friendRequests", uid);
+          unsubscribe = onSnapshot(reqRef, (doc) => {
+            if (doc.exists()) {
+              const { requests } = doc.data();
+              if (requests.some((request: any) => request.uid === mUid)) {
+                setIsReqPending(true);
+              } else {
+                setIsReqPending(false);
+              }
+            }
+          });
+        }
+
+        return () => {
+          unsubscribe();
+        };
       }
     }
-  },[uid,friendsArr])
-  useEffect(()=> {
-    console.log({add,isFriend})
-  },[add,isFriend])
+  }, [uid, friendsArr, mUid]);
+
   const handleClick = async () => {
-    if (add) {
-      await controlsMarkEmailRead.start({ scale: 0, transition: { duration: 0.2 }, transitionEnd: { display: 'none' } });
-      await controlsPersonAdd.start({ scale: 1, transition: { duration: 0.2, }, transitionEnd: { display: 'block' } });
+    const reqRef = doc(db, "friendRequests", uid);
+    if (isReqPending) {
+      // eslint-disable-next-line no-unused-vars
+      const reqSnap = await getDoc(reqRef).then((doc) => {
+        if (doc.exists()) {
+          const { requests } = doc.data();
+          const newRequests = requests.filter(
+            (request: any) => request.uid !== mUid
+          );
+          setDoc(reqRef, { requests: newRequests },{merge:true}).then(() => {
+            setIsReqPending(false);
+            if (socket.connected) {
+              socket.emit("remove_request", {
+                uid: mUid,
+                message: "Friend request has been unsent",
+              });
+            }
+          });
+        }
+      });
     } else {
-      await controlsPersonAdd.start({ scale: 0, transition: { duration: 0.2 }, transitionEnd: { display: 'none' } });
-      await controlsMarkEmailRead.start({ scale: 1, transition: { duration: 0.2 }, transitionEnd: { display: 'block' } });
+      console.log("sending request")
+      // eslint-disable-next-line no-unused-vars
+      const reqSnap = await getDoc(reqRef).then((doc)=> {
+        if(doc.exists()) {
+          const {requests} = doc.data()
+          const request = {
+            uid: mUid,
+            firstName: mFirstName,
+            lastName: mLastName,
+            photoURL: mDp,
+            timestamp: new Date()
+          };
+          const newRequests = [...requests,request]
+          setDoc(reqRef, { requests: newRequests },{merge:true}).then(() => {
+            setIsReqPending(true);
+            if (socket.connected) {
+              socket.emit("add_friend", {
+                friendId: uid,
+                message: `${mFirstName} ${mLastName} sent you a friend request`,
+              });
+            }
+          });
+        }
+      });
     }
-    
-    setAdd(!add);
   };
+const unblock = async()=> {
+  const blockedRef = doc(db,"blockedUsers",mUid)
+  const blockedSnap = await getDoc(blockedRef)
+  if(blockedSnap.exists()) {
+    const {ids} = blockedSnap.data()
+    const newIds = ids.filter((id:string)=>id!==uid)
+    await setDoc(blockedRef,{ids:newIds},{merge:true}).then(()=> {
+      setBlockedStatus(false)
+      setBlockedUsers(newIds)
+      setToast("User unblocked","success")
+    })
+  }
+  const blockedRef2 = doc(db,"blockedUsers",uid)
+  const blockedSnap2 = await getDoc(blockedRef2)
+  if(blockedSnap2.exists()) {
+    const {isBlockedBy} = blockedSnap2.data()
+    const newIds = isBlockedBy.filter((id:string)=>id!==mUid)
+    await setDoc(blockedRef2,{isBlockedBy:newIds},{merge:true})
+  }
+}
 
   return (
-    <Box sx={{width:"100%",height:"10%",display:"flex",my:1,alignItems:"center",gap:"10px",padding:"14px"}}>
-      <Avatar src={photoURL}/>
-      <Box sx={{width:"78%",height:"100%",alignItems:"center",display:"flex"}}>
-        <StyledText style={{fontSize:"14px",margin:"0px"}}>{firstName} {lastName}</StyledText>
+    <Box sx={{ width: "100%", height: "10%", display: "flex", my: 1, alignItems: "center", gap: "10px", padding: "14px" }}>
+      <Avatar src={photoURL} />
+      <Box sx={{ width: "78%", height: "100%", alignItems: "center", display: "flex" }}>
+        <StyledText style={{ fontSize: "14px", margin: "0px" }}>{firstName} {lastName}</StyledText>
       </Box>
-      <motion.div animate={controlsPersonAdd} initial={{ scale: 1, display: 'block' }}>
-       { value===0 && !isFriend? <PersonAddIcon sx={{pr:"10px",cursor:"pointer"}} onClick={handleClick}/>:
-       value===1? <GroupAddIcon sx={{pr:"10px",cursor:"pointer"}} onClick={handleClick}/>:
-         <AddIcCallIcon sx={{pr:"10px",cursor:"pointer"}} onClick={handleClick}/>}
-      </motion.div>
-      <motion.div animate={controlsMarkEmailRead} initial={{ scale: 0, display: 'none' }}>
-        <MarkEmailReadIcon sx={{pr:"10px",cursor:"pointer"}} onClick={handleClick}/>
-      </motion.div>
+      <AnimatePresence>
+        {isReqPending === null ? (
+          <motion.div key="chatIcon"><ChatIcon /></motion.div>
+        ) : (
+          <motion.div
+            key={isReqPending ? 'requestPending' : 'requestNotPending'}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.5 } }}
+          >
+            {blockedStatus? 
+            <Button variant='outlined' sx={{color:"lightgray",width:"80px",borderRadius:"10px",fontSize:"9px",borderColor:"lightGray",":hover":{borderColor:"lightgray"}}} startIcon={<BlockIcon/>} onClick={unblock}>Blocked</Button>
+            :
+            !isReqPending ? (
+              value === 0 ? <PersonAddIcon sx={{ pr: "10px", cursor: "pointer" }} onClick={handleClick} /> :
+                value === 1 ? <GroupAddIcon sx={{ pr: "10px", cursor: "pointer" }} onClick={handleClick} /> :
+                <AddIcCallIcon sx={{ pr: "10px", cursor: "pointer" }} onClick={handleClick} />
+            ) : (
+              <MarkEmailReadIcon sx={{ pr: "10px", cursor: "pointer" }} onClick={handleClick} />
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Box>
-  )
-}
+  );
+};
 
 export default SearchContact;

@@ -17,7 +17,7 @@ import { useChat } from '../../context/ChatContext';
 
 const LoginPage = () => {
   const {setSenderColor,setRecieverColor,setBgType,setBgImage,setBgColor} = useProfile()
-  const {setFriends,setFriendCount} = useChat()
+  const {setFriends,setFriendCount,setBlockedUsers,setIsBlockedBy} = useChat()
       const router = useRouter()
       const controls = useAnimation();
       const [muiPhone, setMuiPhone] = useState("+91");
@@ -46,6 +46,11 @@ const LoginPage = () => {
           console.log("login complete")
           const friendRef = doc(db,"friends",uid)
           const friendSnap = await getDoc(friendRef)
+          const friendReqRef = doc(db,"friendRequests",uid)
+          const reqSnap = await getDoc(friendReqRef)
+          if(!reqSnap.exists()) {
+            setDoc(friendReqRef,{uid,requests:[]},{merge:true})
+          }
           if(friendSnap.exists()) {
             const {friendsArr,count} = friendSnap.data()
             console.log(friendsArr)

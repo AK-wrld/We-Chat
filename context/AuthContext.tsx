@@ -9,9 +9,10 @@ import React, {
 import { auth, db } from "../services/firebase.config";
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useProfile } from "./ProfileContext";
-
 import dayjs from 'dayjs';
+
 import { useRouter } from "next/navigation";
+import { useChat } from "./ChatContext";
 interface AuthContextProps {
   uid:string;
   loading: boolean;
@@ -40,6 +41,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [uid, setUid] = useState("");
   const [fcmToken, setFcmToken] = useState('');
   const {setFirstName,setLastName,setEmail,setPhone,setDob,setBio,setDp,setLastActive,setGender} = useProfile();
+  const {setBlockedUsers,setIsBlockedBy} = useChat()
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async(authUser) => {
       setLoading(true);
@@ -48,9 +50,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         const{uid} = authUser;
         setUid(uid);
+        const blockedRef = doc(db,"blockedUsers",uid)
+        const blockedSnap = await getDoc(blockedRef)
+        if(blockedSnap.exists()) {
+          const {ids,isBlockedBy} = blockedSnap.data()
+          setBlockedUsers(ids)
+          setIsBlockedBy(isBlockedBy)
+        }
+        else {
+          setDoc(blockedRef,{ids:[],isBlockedBy:[],user:uid},{merge:true})
+        }
         const docRef = doc(db, "user", uid);
         const docSnap = await getDoc(docRef);
-
+        
         if (docSnap.exists()) {
           console.log("Document data:", docSnap.data());
           const {firstName,lastName,email,phone,dob,bio,photoURL,timestamp,gender} = docSnap.data();

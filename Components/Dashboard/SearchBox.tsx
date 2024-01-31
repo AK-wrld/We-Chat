@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {motion} from 'framer-motion'
 import SearchContact from "./SearchContact";
 import CloseIcon from '@mui/icons-material/Close';
@@ -8,14 +8,21 @@ type Props = {
   open: boolean;
   value: number;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  searchContactArr: TAuthUser[]
+  searchContactArr: TAuthUser[],
+  openNotis: boolean;
+  setOpenNotis: React.Dispatch<React.SetStateAction<boolean>>;
 };
-const SearchBox = ({ open,value,setOpen,searchContactArr }: Props) => {
+const SearchBox = ({ open,value,setOpen,searchContactArr,openNotis,setOpenNotis }: Props) => {
     const variants = {
         open: { opacity: 1, height: "70vh" },
         closed: { opacity: 0, height: "0vh" }
       };
-
+      useEffect(()=> {
+        // console.log({openNotis,open})
+        if(open) {
+          setOpenNotis(false)
+        }
+      },[openNotis,open,setOpenNotis])
   return (
     <>
       <motion.div

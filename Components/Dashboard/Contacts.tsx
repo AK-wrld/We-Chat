@@ -18,7 +18,7 @@ const Contacts = () => {
          console.log("test")
 
        const friendRef = doc(db, "friends", uid);
-       console.log(friendRef)
+      //  console.log(friendRef)
        const friendSnap = await getDoc(friendRef);
        if(friendSnap.exists()) {
          const {friendsArr, count} = friendSnap.data();

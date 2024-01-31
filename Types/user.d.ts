@@ -14,5 +14,19 @@ export type TAuthUser = {
     phone: string ;
     dob:string ;
     timestamp: Date;
-    uid:string
+    uid:string;
+    fcmToken:string;
+    isBlocked?:boolean;
   };
+  export type TFriendRequest = {
+    requests: [
+        {
+            firstName: "string",
+            lastName: "string",
+            photoURL: "string",
+            timestamp: "string",
+            uid: "string",
+        }
+    ],
+    uid: "string",
+  }
