@@ -6,6 +6,7 @@ import { useProfile } from '../../context/ProfileContext';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
+    cursor:"pointer",
     backgroundColor: '#44b700',
     color: '#44b700',
     boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
@@ -35,13 +36,15 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 export default function ProfileAvatar() {
     const {dp} = useProfile();
+    const {setOpenProfile} = useProfile()
   return (
       <StyledBadge
         overlap="circular"
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         variant="dot"
+        onClick={()=>setOpenProfile(true)}
       >
-        <Avatar alt="Remy Sharp" src={dp} />
+        <Avatar alt="Remy Sharp" src={dp} sx={{cursor:"pointer"}}/>
       </StyledBadge>
       
   );

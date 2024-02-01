@@ -35,7 +35,9 @@ const ProfileContext = createContext({
   bgImage: "/1.1.png",
   setBgImage: (bgImage: string) => {},
   gender: "",
-  setGender: (gender:string)=>{}
+  setGender: (gender:string)=>{},
+  openProfile: false,
+  setOpenProfile: (openProfile: boolean) => {},
 });
 
 export const useProfile = () => {
@@ -57,6 +59,7 @@ export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) =>
   const [bgColor,setBgColor] = useState<string>(primary)
   const [bgImage,setBgImage] = useState<string>('/1.1.png')
   const [gender,setGender] = useState('')
-  return <ProfileContext.Provider value={{firstName,setFirstName,lastName,setLastName,email,setEmail,phone,setPhone,dob,setDob,bio,setBio,dp,setDp,lastActive,setLastActive,sendercolor,setSenderColor,recieverColor,setRecieverColor,bgType,setBgType,bgColor,setBgColor,bgImage,setBgImage,gender,setGender}}>{children}</ProfileContext.Provider>;
+  const [openProfile,setOpenProfile] = useState(false)
+  return <ProfileContext.Provider value={{firstName,setFirstName,lastName,setLastName,email,setEmail,phone,setPhone,dob,setDob,bio,setBio,dp,setDp,lastActive,setLastActive,sendercolor,setSenderColor,recieverColor,setRecieverColor,bgType,setBgType,bgColor,setBgColor,bgImage,setBgImage,gender,setGender,openProfile,setOpenProfile}}>{children}</ProfileContext.Provider>;
 
 };

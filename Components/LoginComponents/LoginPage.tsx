@@ -17,7 +17,7 @@ import { useChat } from '../../context/ChatContext';
 
 const LoginPage = () => {
   const {setSenderColor,setRecieverColor,setBgType,setBgImage,setBgColor} = useProfile()
-  const {setFriends,setFriendCount,setBlockedUsers,setIsBlockedBy} = useChat()
+  const {setFriends,setFriendCount} = useChat()
       const router = useRouter()
       const controls = useAnimation();
       const [muiPhone, setMuiPhone] = useState("+91");

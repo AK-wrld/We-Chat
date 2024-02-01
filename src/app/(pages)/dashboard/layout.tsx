@@ -62,6 +62,7 @@ const Layout = ({children}:LayoutProps) => {
       socket.off("joined_room")
       socket.off("friend_req_unsent")
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const {uid} =useAuth()
   const {setSenderColor,setRecieverColor,setBgType,setBgImage,setBgColor} = useProfile()
@@ -73,6 +74,8 @@ const Layout = ({children}:LayoutProps) => {
   const [friendReqArr,setFriendReqArr] = useState<TFriendRequest[]>([])
   const [openNotis,setOpenNotis] = useState(false)
   const [reqCount,setReqCount] = useState(0)
+  // eslint-disable-next-line no-unused-vars
+  
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     // console.log(newValue)
     setValue(newValue);
@@ -148,7 +151,7 @@ const Layout = ({children}:LayoutProps) => {
         unsubscribe(); // Unsubscribe when the component unmounts
       };
     }
-  }, [searchVal, uid,value]);
+  }, [blockedUsers, isBlockedByArr, searchVal, uid, value]);
   const handleNotis = ()=>{
     if(open && !openNotis) {
       setOpen(false)
