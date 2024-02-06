@@ -5,7 +5,7 @@ import { Grid } from '@mui/material';
 import ProfileStepper from '../../../../Components/ProfileComponents/ProfileStepper';
 import { useProfile } from '../../../../context/ProfileContext';
 import ProfilePreview from '../../../../Components/ProfileComponents/ProfilePreview';
-import ChatScreen from '../../../../Components/ChatComponents/ChatScreen';
+import ChatScreenPreview from '../../../../Components/ChatComponents/ChatScreenPreview';
 const steps = ['Lets sort some basic stuff out first','How about a cool profile pic?' ,'Lets work on your screens'];
 const Profile = () => {
     const [activeStep, setActiveStep] = useState(0);
@@ -24,7 +24,7 @@ const Profile = () => {
     
   </Grid>
   <StyledGrid item xs={7} >
-    {activeStep===0 || activeStep===1 ? <ProfilePreview/>:<ChatScreen/>}
+    {activeStep===0 || activeStep===1 ? <ProfilePreview/>:<ChatScreenPreview/>}
   </StyledGrid>
 </Grid>
     </>

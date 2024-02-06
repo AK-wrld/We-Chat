@@ -1,6 +1,5 @@
 "use client";
-import React, { useEffect } from 'react'
-
+import React from 'react'
 import ChatScreen from '../../../../../Components/ChatComponents/ChatScreen';
 type ContactPageProps = {
   params: {
@@ -8,12 +7,11 @@ type ContactPageProps = {
   };
 };
 const ContactPage = ({params}:ContactPageProps) => {
-useEffect(()=> {
-  console.log(params.recId)
-},[params.recId])
+  const {recId} = params
+
   return (
     <>
-    <ChatScreen/>
+    <ChatScreen friendId={recId}/>
 
 
     </>

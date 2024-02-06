@@ -1,3 +1,4 @@
+// import { serverTimestamp } from 'firebase/firestore';
 export type TAuthData = {
     accessToken: string;
     displayName: string,
@@ -29,4 +30,11 @@ export type TAuthUser = {
         }
     ],
     uid: "string",
+  }
+  export type TChatType = {
+    from: string;
+    content: string;
+    type: string;
+    timestamp: string;
+
   }

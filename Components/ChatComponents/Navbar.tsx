@@ -9,6 +9,9 @@ import InputBase from '@mui/material/InputBase';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import SearchIcon from '@mui/icons-material/Search';
 import { primary } from '../../StyledComponents/Global';
+import { useSearchParams } from "next/navigation";
+import { Avatar } from '@mui/material';
+import { socket } from '../../socket';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -53,6 +56,24 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function SearchAppBar() {
+  const searchParams = useSearchParams()
+  const [typing, isTyping] = React.useState(false)
+  React.useEffect(()=> {
+    console.log(typing)
+  },[typing])
+  React.useEffect(()=>{
+    socket.on("typing",()=> {
+      console.log("typing")
+      isTyping(true)
+    })
+    socket.on("not_typing",()=> {
+      isTyping(false)
+    })
+    return ()=> {
+      socket.off("typing")
+      socket.off("notTyping")
+    }
+  },[])
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" sx={{backgroundColor:"#0d285b"}}>
@@ -66,14 +87,24 @@ export default function SearchAppBar() {
           >
             <ArrowDownwardIcon />
           </IconButton>
+          <Avatar src={searchParams.get("fDp") || "/logo.png"} sx={{marginRight:"10px",cursor:"pointer"}}/>
+          <Box sx={{display:"flex",flexDirection:"column",flex:1}}>
           <Typography
             variant="h6"
             noWrap
             component="div"
             sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block',color:primary } }}
           >
-            We Chat
+            {searchParams.get("fFirstName")!==null?searchParams.get("fFirstName")+" "+searchParams.get("fLastName"):"We Chat"}
           </Typography>
+          <Typography
+          variant='body2'
+          noWrap
+          component={"div"}
+          sx={{display:typing?"block":"none"}}>
+            Typing...
+          </Typography>
+          </Box>
           <Search>
             <SearchIconWrapper>
               <SearchIcon />

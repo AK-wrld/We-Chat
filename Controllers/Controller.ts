@@ -2,7 +2,7 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { PhoneNumberUtil } from 'google-libphonenumber';
 import { auth, db } from '../services/firebase.config';
 import { toast } from 'react-toastify';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { TAuthUser } from '../Types/user';
 const phoneUtil = PhoneNumberUtil.getInstance();
 export const isPhoneValid = (phone: string) => {
@@ -77,6 +77,7 @@ export function capitalizeFirstLetter(str:string) {
   str = str.toLowerCase()
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
 export const getUser = async(uid:string)=> {
   const userRef = doc(db,"user",uid)
   return getDoc(userRef).then((doc)=> {
@@ -103,4 +104,21 @@ export const unblockUser = async(mUid:string,uid:string)=> {
     const newIds = isBlockedBy.filter((id:string)=> id !== mUid)
     await setDoc(blockRef,{isBlockedBy:newIds},{merge:true})
   }
+}
+export const sendMessage = async (docRef:any,from:string,content:string,type:string,currDate:string): Promise<boolean>=> {
+  const messageRef = collection(docRef,"messages")
+  
+  const message = {
+    from,
+    content,
+    type,
+    timestamp:currDate
+  }
+  return setDoc(doc(messageRef),message).then(()=> {
+    return true
+  }).catch((err)=> {
+    console.log(err)
+    return false
+  }
+  )
 }

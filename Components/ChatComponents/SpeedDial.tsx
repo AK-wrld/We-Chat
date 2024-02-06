@@ -3,16 +3,16 @@ import Box from '@mui/material/Box';
 import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
-import FileCopyIcon from '@mui/icons-material/FileCopyOutlined';
-import SaveIcon from '@mui/icons-material/Save';
-import PrintIcon from '@mui/icons-material/Print';
-import ShareIcon from '@mui/icons-material/Share';
+import MmsIcon from '@mui/icons-material/Mms';
+import MicIcon from '@mui/icons-material/Mic';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
 
 const actions = [
-  { icon: <FileCopyIcon />, name: 'Copy' },
-  { icon: <SaveIcon />, name: 'Save' },
-  { icon: <PrintIcon />, name: 'Print' },
-  { icon: <ShareIcon />, name: 'Share' },
+  { icon: <MmsIcon />, name: 'Send Media' },
+  { icon: <MicIcon />, name: 'Record Audio' },
+  { icon: <CameraAltIcon />, name: 'Open Camera' },
+  { icon: <PermContactCalendarIcon />, name: 'Share Contact' },
 ];
 
 export default function ControlledOpenSpeedDial() {

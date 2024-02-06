@@ -4,73 +4,35 @@ import { Box, Typography } from "@mui/material";
 import Footer from "./Footer";
 import EmojiPicker from "emoji-picker-react";
 import { useProfile } from "../../context/ProfileContext";
-import { db } from "../../services/firebase.config";
-import { collection, doc, getDoc, getDocs,orderBy,query,setDoc} from "firebase/firestore";
-import { useAuth } from "../../context/AuthContext";
-import { TChatType } from "../../Types/user";
-import { socket } from "../../socket";
-
-type Props = {
-    friendId:string
-}
-const ChatScreen = ({friendId}:Props) => {
-    const {uid} = useAuth()
+const ChatScreenPreview = () => {
     const {bgColor,bgImage,bgType,sendercolor,recieverColor} = useProfile();
-    const [messages, setMessages] = useState<TChatType[]|null>([])
-    // eslint-disable-next-line no-unused-vars
-    const [type,setType] = useState("text")
-    const [docRef,setDocRef] = useState<null|any>(null)
-    const [openEmoji, setOpenEmoji] = useState(false);
-    const [searchValue, setSearchValue] = useState("");
-    
-    useEffect(() => {
-      const fetchConversations = async () => {
-        console.log("running")
-        const docRef1 = doc(db, "conversations", `${uid}_${friendId}`);
-        const docRef2 = doc(db, "conversations", `${friendId}_${uid}`);
-        const [docs1, docs2] = await Promise.all([getDoc(docRef1), getDoc(docRef2)]);
-        if(!docs1.exists() && !docs2.exists()) {
-          await setDoc(docRef1,{user1:uid,user2:friendId})
-        }
-        else {
-      const existingDocRef = docs1.exists() ? docRef1 : docRef2;
-      setDocRef(existingDocRef);
-      const messagesRef = collection(existingDocRef, 'messages');
-const orderedMessagesRef = query(messagesRef, orderBy("timestamp", "asc"));
-const messageDocs = await getDocs(orderedMessagesRef);
-      const messages = messageDocs.docs.map(doc => doc.data() as TChatType);
-      console.log(messages)
-      setMessages(messages);
-          
-        }
-      };
-      if(friendId && uid) fetchConversations();
-      
-    }, [friendId, uid]);
-
+    useEffect(()=> {
+      console.log({bgColor,bgImage,bgType,sendercolor,recieverColor})
+    },[bgColor,bgImage,bgType,sendercolor,recieverColor])
+  const [openEmoji, setOpenEmoji] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const handleEmoji = (emoji: any) => {
     console.log(emoji.emoji);
     setSearchValue((searchValue) => searchValue.concat(emoji.emoji));
   };
+  
   // eslint-disable-next-line no-unused-vars
-
+  const [messages, setMessages] = useState([ {
+    sender: "me",
+    message: "Hello",
+    timestamp: "Jan 18, 2024 at 6:56:05pm UTC+05:30",
+  },
+  {
+    sender: "other",
+    message: "Hi",
+    timestamp: "Jan 18, 2024 at 6:56:35pm UTC+05:30",
+  },
+  ])
   const ref = useRef<HTMLDivElement>(null);
   useEffect(()=> {
-    console.log(ref.current?.scrollHeight)
+    // console.log(ref.current?.scrollHeight)
     ref.current?.scrollTo(0,ref.current?.scrollHeight)
   },[messages])
-  useEffect(()=> {
-    console.log(messages)
-  },[messages])
-  useEffect(()=>{
-    socket.on("add_message",(data)=> {
-      console.log(data)
-      setMessages(prevMessages => prevMessages ? [...prevMessages, data] : [data]);
-    })
-    return ()=> {
-      socket.off("add_message")
-    }
-  },[])
   return (
     <>
       <Box
@@ -79,6 +41,7 @@ const messageDocs = await getDocs(orderedMessagesRef);
           flexDirection: "column",
           width: "100%",
           height: "100vh",
+        //   add backgroundColor if bgType is solid else add background with url as bgImage
         background:bgType==='Solid'?bgColor:`url(/${bgImage})`,
           backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
@@ -89,11 +52,9 @@ const messageDocs = await getDocs(orderedMessagesRef);
           <Navbar />
         </Box>
         <Box ref={ref} sx={{ height: "85vh", overflowY: "scroll",overflowX:"hidden",overflowAnchor:"none" }}>
-          {messages && messages.length>0 ? (
+          {messages ? (
             messages.map((message, index) =>
-            
-              message.from === uid ? (
-                
+              message.sender === "me" ? (
                 <Box
                   key={index}
                   sx={{
@@ -116,8 +77,9 @@ const messageDocs = await getDocs(orderedMessagesRef);
                     }}
                   >
                     <Typography style={{ fontSize: "14px", color: "black" }}>
-                      {message.content}
+                      {message.message}
                     </Typography>
+                    {/* add timestamp value at the bottom right  */}
                     <Typography
                       style={{
                         fontSize: "10px",
@@ -125,8 +87,7 @@ const messageDocs = await getDocs(orderedMessagesRef);
                         textAlign: "right",
                       }}
                     >
-                  {message.timestamp.split(" ")[1].split(":")[0]}:{message.timestamp.split(" ")[1].split(":")[1]}
-                      {/* {message.timestamp.toDate().toDateString()} */}
+                        {message.timestamp.split(" ")[4].split(":")[0]+":"+message.timestamp.split(" ")[4].split(":")[1]}
                     </Typography>
                   </Box>
                 </Box>
@@ -151,7 +112,7 @@ const messageDocs = await getDocs(orderedMessagesRef);
                     }}
                   >
                     <Typography style={{ fontSize: "14px", color: "white" }}>
-                      {message.content}
+                      {message.message}
                     </Typography>
                     <Typography
                       style={{
@@ -160,8 +121,7 @@ const messageDocs = await getDocs(orderedMessagesRef);
                         textAlign: "right",
                       }}
                     >
-                      {message.timestamp.split(" ")[1].split(":")[0]}:{message.timestamp.split(" ")[1].split(":")[1]}
-                        {/* {message.timestamp.split(" ")[4].split(":")[0]+":"+message.timestamp.split(" ")[4].split(":")[1]} */}
+                        {message.timestamp.split(" ")[4].split(":")[0]+":"+message.timestamp.split(" ")[4].split(":")[1]}
                     </Typography>
                   </Box>
                 </Box>
@@ -177,7 +137,7 @@ const messageDocs = await getDocs(orderedMessagesRef);
                 justifyContent: "center",
               }}
             >
-              <Typography style={{ fontSize: "1.5rem", color: "white" }}>
+              <Typography style={{ fontSize: "1.5rem", color: "gray" }}>
                 Start a conversation
               </Typography>
             </Box>
@@ -196,11 +156,6 @@ const messageDocs = await getDocs(orderedMessagesRef);
             setOpenEmoji={setOpenEmoji}
             searchValue={searchValue}
             setSearchValue={setSearchValue}
-            docRef={docRef}
-            uid={uid}
-            messages={messages}
-            friendId={friendId}
-            setMessages={setMessages}
           />
         </Box>
       </Box>
@@ -208,4 +163,4 @@ const messageDocs = await getDocs(orderedMessagesRef);
   );
 };
 
-export default ChatScreen;
+export default ChatScreenPreview;

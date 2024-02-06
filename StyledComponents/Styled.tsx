@@ -5,7 +5,7 @@ import styled from '@emotion/styled'
 
 export const StyledGrid = styled(Grid)`
 background:${primary};
-height:100vh;
+min-height:100vh;
 padding:0;
 display:flex;
 `

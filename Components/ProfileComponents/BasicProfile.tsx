@@ -55,7 +55,7 @@ const BasicProfile = ({handleNext,handleBack,handleReset,activeStep,steps}:Props
     <>
       <StyledSubTitle>Basic Profile</StyledSubTitle>
       <form>
-        <Grid container spacing={7} style={{height:"53vh"}}>
+        <Grid container spacing={7}>
           <Grid item xs={6}>
             
               <StyledLabel htmlFor="firstName">First Name</StyledLabel>

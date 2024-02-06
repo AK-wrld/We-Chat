@@ -49,7 +49,7 @@ const ProfilePreview = () => {
                 <StyledText style={{fontSize:"16px",margin:0}}>{bio}</StyledText>
                 </Box>
             </Grid>
-            <Grid container item xs={12}>
+            <Grid container item xs={12} sx={{height:"fit-content"}}>
                 <Grid item xs={6} sx={{display:'flex',gap:2}}>
                 <Avatar><CakeIcon sx={{width:'fit-content'}}/></Avatar>
                 <Box>
