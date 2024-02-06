@@ -7,19 +7,24 @@ import MmsIcon from '@mui/icons-material/Mms';
 import MicIcon from '@mui/icons-material/Mic';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
-
+type Props = {
+  setType:React.Dispatch<React.SetStateAction<string>>;
+}
 const actions = [
-  { icon: <MmsIcon />, name: 'Send Media' },
-  { icon: <MicIcon />, name: 'Record Audio' },
-  { icon: <CameraAltIcon />, name: 'Open Camera' },
-  { icon: <PermContactCalendarIcon />, name: 'Share Contact' },
+  { icon: <MmsIcon />, name: 'Send Media',type:"media" },
+  { icon: <MicIcon />, name: 'Record Audio',type:"audio" },
+  { icon: <CameraAltIcon />, name: 'Open Camera',type:"camera" },
+  { icon: <PermContactCalendarIcon />, name: 'Share Contact',type:"contact" },
 ];
 
-export default function ControlledOpenSpeedDial() {
+export default function ControlledOpenSpeedDial({setType}:Props) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
+  const handleUpdate = (type:string) => {
+    setType(type)
+    setOpen(false)
+  }
   const handleClose = () => setOpen(false);
-
   return (
     <Box sx={{ height: 320, transform: 'translateZ(0px)', flexGrow: 1 }}>
       <SpeedDial
@@ -35,7 +40,7 @@ export default function ControlledOpenSpeedDial() {
             key={action.name}
             icon={action.icon}
             tooltipTitle={action.name}
-            onClick={handleClose}
+            onClick={()=>handleUpdate(action.type)}
           />
         ))}
       </SpeedDial>

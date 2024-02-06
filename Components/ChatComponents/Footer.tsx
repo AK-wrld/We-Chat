@@ -18,13 +18,15 @@ type Props = {
     uid:string;
     messages:TChatType[]|null;
     setMessages:React.Dispatch<React.SetStateAction<TChatType[]|null>>;
-    friendId:string
+    friendId:string;
+    type:string;
+    setType:React.Dispatch<React.SetStateAction<string>>;
 }
 
-const Footer = ({openEmoji,setOpenEmoji,searchValue,setSearchValue,docRef,uid,setMessages,friendId,messages}:Props) => {
+const Footer = ({openEmoji,setOpenEmoji,searchValue,setSearchValue,docRef,uid,setMessages,friendId,messages,type,setType}:Props) => {
   const [disabled,setDisabled] = useState(false)
   // eslint-disable-next-line no-unused-vars
-  const [type,setType] = useState("text")
+  
   useEffect(()=> {
     if(location.pathname === '/profile') {
         setDisabled(true)
@@ -69,6 +71,7 @@ const setSearch = (value:string) => {
     <AppBar sx={{ top: 'auto', bottom: 0,position:"inherit",backgroundColor:primary}}>
       <Toolbar sx={{paddingLeft:"5px !important"}}>
         {
+
             openEmoji? <CloseIcon sx={{color:text,padding:"10px",cursor:"pointer"}} onClick={()=>setOpenEmoji(false)}/>:<EmojiEmotionsIcon sx={{color:title,padding:"10px",cursor:"pointer"}} onClick={()=>setOpenEmoji(true)}/>
         }
         <TextField
@@ -90,7 +93,7 @@ const setSearch = (value:string) => {
           }}
         />
         <Box sx={{ position: 'absolute', bottom: 5, right: 5 }}>
-          <ControlledOpenSpeedDial/>
+          <ControlledOpenSpeedDial setType={setType}/>
         </Box>
       </Toolbar>
     </AppBar>

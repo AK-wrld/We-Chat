@@ -34,7 +34,7 @@ background-color: ${text};
     cursor: pointer;
     display: inline-block;
     font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 500;
     height: 40px;
     line-height: 20px;

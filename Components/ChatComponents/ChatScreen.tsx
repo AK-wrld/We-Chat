@@ -9,6 +9,8 @@ import { collection, doc, getDoc, getDocs,orderBy,query,setDoc} from "firebase/f
 import { useAuth } from "../../context/AuthContext";
 import { TChatType } from "../../Types/user";
 import { socket } from "../../socket";
+import MediaUpload from "./MediaUpload";
+import Image from "next/image";
 
 type Props = {
     friendId:string
@@ -17,12 +19,10 @@ const ChatScreen = ({friendId}:Props) => {
     const {uid} = useAuth()
     const {bgColor,bgImage,bgType,sendercolor,recieverColor} = useProfile();
     const [messages, setMessages] = useState<TChatType[]|null>([])
-    // eslint-disable-next-line no-unused-vars
-    const [type,setType] = useState("text")
     const [docRef,setDocRef] = useState<null|any>(null)
     const [openEmoji, setOpenEmoji] = useState(false);
     const [searchValue, setSearchValue] = useState("");
-    
+    const [type,setType] = useState("text")
     useEffect(() => {
       const fetchConversations = async () => {
         console.log("running")
@@ -88,7 +88,7 @@ const messageDocs = await getDocs(orderedMessagesRef);
         <Box sx={{ width: "100%", position: "relative" }}>
           <Navbar />
         </Box>
-        <Box ref={ref} sx={{ height: "85vh", overflowY: "scroll",overflowX:"hidden",overflowAnchor:"none" }}>
+        {type==='text'?<Box ref={ref} sx={{ height: "85vh", overflowY: "scroll",overflowX:"hidden",overflowAnchor:"none" }}>
           {messages && messages.length>0 ? (
             messages.map((message, index) =>
             
@@ -115,9 +115,13 @@ const messageDocs = await getDocs(orderedMessagesRef);
                       minWidth:"60px"
                     }}
                   >
+                    {
+                    message.type==="text"?
                     <Typography style={{ fontSize: "14px", color: "black" }}>
                       {message.content}
-                    </Typography>
+                    </Typography>:
+                    message.type==="media"?<Image src={message.content} alt="media" width={100} height={100}/>:null
+                    }
                     <Typography
                       style={{
                         fontSize: "10px",
@@ -150,9 +154,13 @@ const messageDocs = await getDocs(orderedMessagesRef);
                       minWidth:"60px"
                     }}
                   >
-                    <Typography style={{ fontSize: "14px", color: "white" }}>
+                    {
+                    message.type==="text"?
+                    <Typography style={{ fontSize: "14px", color: "black" }}>
                       {message.content}
-                    </Typography>
+                    </Typography>:
+                    message.type==="media"?<Image src={message.content} alt="media" width={100} height={100}/>:null
+                    }
                     <Typography
                       style={{
                         fontSize: "10px",
@@ -183,7 +191,7 @@ const messageDocs = await getDocs(orderedMessagesRef);
             </Box>
           )}
           <div style={{height:"1px"}}></div>
-        </Box>
+        </Box>:<MediaUpload setType={setType} docRef={docRef} uid={uid} setMessages={setMessages} friendId={friendId}/>}
         <Box sx={{ width: "100%", height: "7vh" }}>
           {openEmoji ? (
             <Box style={{ width: "100%", position: "fixed", bottom: "7vh" }}>
@@ -201,6 +209,8 @@ const messageDocs = await getDocs(orderedMessagesRef);
             messages={messages}
             friendId={friendId}
             setMessages={setMessages}
+            type={type}
+            setType={setType}
           />
         </Box>
       </Box>
