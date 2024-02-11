@@ -37,6 +37,9 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 export default function ProfileAvatar() {
     const {dp} = useProfile();
     const {setOpenProfile} = useProfile()
+    // React.useEffect(()=> {
+    //   console.log({openProfile})
+    // },[openProfile])
   return (
       <StyledBadge
         overlap="circular"

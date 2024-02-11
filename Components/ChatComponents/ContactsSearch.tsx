@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { TChatType } from '../../Types/user';
+import { TTypesOfChat } from '../../Types/user';
 import { Box } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { primary } from '../../StyledComponents/Global';
@@ -9,15 +9,8 @@ import SearchBar from '../Dashboard/SearchBar';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../services/firebase.config';
 import { capitalizeFirstLetter } from '../../Controllers/Controller';
-type Props = {
-    setType:React.Dispatch<React.SetStateAction<string>>;
-    docRef:any|null;
-    uid:string;
-    setMessages:React.Dispatch<React.SetStateAction<TChatType[]|null>>;
-    friendId:string;
-    setDocRef:React.Dispatch<React.SetStateAction<any|null>>;
-}
-const ContactsSearch = ({setType,friendId,docRef,setDocRef,setMessages,uid}:Props) => {
+
+const ContactsSearch = ({setType,friendId,docRef,setDocRef,setMessages,uid}:TTypesOfChat) => {
     const {friendsArr} = useChat()
     const [modifiedFriendsArr,setModifiedFriendsArr] = useState<string[]>([])
     const [filteredArr,setFilteredArr] = useState<string[]>([])

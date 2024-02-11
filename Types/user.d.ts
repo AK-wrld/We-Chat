@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import React from "react";
 
 // import { serverTimestamp } from 'firebase/firestore';
 export type TAuthData = {
@@ -51,4 +52,12 @@ export type TAuthUser = {
     type: string;
     timestamp: Timestamp;
     contact?:TContact;
+  }
+  export type TTypesOfChat = {
+    setType:React.Dispatch<React.SetStateAction<string>>;
+    docRef:any|null;
+    uid:string;
+    setMessages:React.Dispatch<React.SetStateAction<TChatType[]|null>>;
+    friendId:string;
+    setDocRef:React.Dispatch<React.SetStateAction<any|null>>;
   }

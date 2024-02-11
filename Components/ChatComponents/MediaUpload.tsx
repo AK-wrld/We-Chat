@@ -9,19 +9,12 @@ import { v4 } from 'uuid';
 import Image from 'next/image';
 import { StyleButton } from '../../StyledComponents/Styled';
 import { sendMessage, setToast } from '../../Controllers/Controller';
-import { TChatType } from '../../Types/user';
+import { TTypesOfChat } from '../../Types/user';
 import { socket } from '../../socket';
 import { Timestamp, doc, setDoc } from 'firebase/firestore';
-type Props = {
-    setType:React.Dispatch<React.SetStateAction<string>>;
-    docRef:any|null;
-    uid:string;
-    setMessages:React.Dispatch<React.SetStateAction<TChatType[]|null>>;
-    friendId:string;
-    setDocRef:React.Dispatch<React.SetStateAction<any|null>>;
-}
+
 const fileTypes = ["JPG", "PNG", "GIF"];
-const MediaUpload = ({setType,docRef,uid,setMessages,friendId,setDocRef}:Props) => {
+const MediaUpload = ({setType,docRef,uid,setMessages,friendId,setDocRef}:TTypesOfChat) => {
     const [file, setFile] = useState<null | File>(null);
     const [url,setUrl] = useState<string>("")
     const [bucketUrl,setBucketUrl] = useState<string>("")

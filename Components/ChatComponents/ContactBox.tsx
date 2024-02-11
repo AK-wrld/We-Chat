@@ -30,7 +30,7 @@ const ContactBox = ({contact,from}:Props) => {
        if(uid && mUid) checkFriend()
     },[uid,mUid])
     useEffect(()=> {
-        console.log({blockedUsers,isBlockedByArr})
+        // console.log({blockedUsers,isBlockedByArr})
         if(uid) {
             if(blockedUsers) {
                 if(blockedUsers.includes(uid)) {

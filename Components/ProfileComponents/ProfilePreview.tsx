@@ -20,8 +20,12 @@ const ProfilePreview = () => {
     useEffect(()=> {
         if(location.pathname === '/profile') {
             setDisabled(true)
+            
         }
     },[disabled])
+    useEffect(()=> {
+        console.log(location.pathname)
+    },[location.pathname])
   return (
     <>
     {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { TChatType } from '../../Types/user';
+import {TTypesOfChat } from '../../Types/user';
 import { Box } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { primary } from '../../StyledComponents/Global';
@@ -11,15 +11,8 @@ import { Timestamp, doc, setDoc } from 'firebase/firestore';
 import { db } from '../../services/firebase.config';
 import { sendMessage, setToast } from '../../Controllers/Controller';
 import { socket } from '../../socket';
-type Props = {
-    setType:React.Dispatch<React.SetStateAction<string>>;
-    docRef:any|null;
-    uid:string;
-    setMessages:React.Dispatch<React.SetStateAction<TChatType[]|null>>;
-    friendId:string;
-    setDocRef:React.Dispatch<React.SetStateAction<any|null>>;
-}
-const CameraUpload = ({setDocRef,docRef,friendId,setMessages,setType,uid}:Props) => {
+
+const CameraUpload = ({setDocRef,docRef,friendId,setMessages,setType,uid}:TTypesOfChat) => {
     const [imgSrc,setImgSrc] = useState<string>("")
     const handleBack = ()=> {
       setImgSrc("")

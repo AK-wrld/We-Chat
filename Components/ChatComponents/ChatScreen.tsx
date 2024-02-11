@@ -15,6 +15,9 @@ import Linkify from "linkify-react";
 import CustomImage from "./CustomImage";
 import ContactsSearch from "./ContactsSearch";
 import ContactBox from "./ContactBox";
+import AudioShare from "./AudioShare";
+import AudioBox from "./AudioBox";
+import { v4 } from "uuid";
 
 type Props = {
     friendId:string
@@ -133,7 +136,8 @@ const messageDocs = await getDocs(orderedMessagesRef);
                       {message.content}
                     </Linkify>:
                     message.type==="media" || message.type==="camera"?<CustomImage src={message.content}/>:
-                    message.type==="contact"? <ContactBox contact={message.contact} from={"sender"}/>:null
+                    message.type==="contact"? <ContactBox contact={message.contact} from={"sender"}/>:
+                    message.type==="audio"? <AudioBox audioUrl={message.content} id={`id${v4()}`}/>:null
                     }
                     <Typography
                       style={{
@@ -172,7 +176,8 @@ const messageDocs = await getDocs(orderedMessagesRef);
                       {message.content}
                     </Linkify>:
                     message.type==="media" || message.type==="camera"?<CustomImage src={message.content}/>:
-                    message.type==="contact"? <ContactBox contact={message.contact} from={"reciever"}/>:null
+                    message.type==="contact"? <ContactBox contact={message.contact} from={"reciever"}/>:
+                    message.type==="audio"? <AudioBox audioUrl={message.content} id={`id${v4()}`}/>:null
                     }
                     <Typography
                       style={{
@@ -207,7 +212,8 @@ const messageDocs = await getDocs(orderedMessagesRef);
         type==='media'?<MediaUpload setType={setType} docRef={docRef} uid={uid} setMessages={setMessages} setDocRef={setDocRef} friendId={friendId}/>
         :
         type==='camera'?<CameraUpload setType={setType} docRef={docRef} uid={uid} setMessages={setMessages} setDocRef={setDocRef} friendId={friendId}/>:
-        type==='contacts'?<ContactsSearch setMessages={setMessages} setDocRef={setDocRef} setType={setType} docRef={docRef} uid={uid} friendId={friendId}/>:null}
+        type==='contacts'?<ContactsSearch setMessages={setMessages} setDocRef={setDocRef} setType={setType} docRef={docRef} uid={uid} friendId={friendId}/>
+        :type==='audio'?<AudioShare setType={setType} docRef={docRef} uid={uid} setMessages={setMessages} setDocRef={setDocRef} friendId={friendId}/>:null}
         <Box sx={{ width: "100%", height: "7vh" }}>
           {openEmoji ? (
             <Box style={{ width: "100%", position: "fixed", bottom: "7vh" }}>
