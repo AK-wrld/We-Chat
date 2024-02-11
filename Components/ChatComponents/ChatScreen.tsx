@@ -5,12 +5,16 @@ import Footer from "./Footer";
 import EmojiPicker from "emoji-picker-react";
 import { useProfile } from "../../context/ProfileContext";
 import { db } from "../../services/firebase.config";
-import { collection, doc, getDoc, getDocs,orderBy,query,setDoc} from "firebase/firestore";
+import { Timestamp, collection, doc, getDoc, getDocs,orderBy,query,setDoc} from "firebase/firestore";
 import { useAuth } from "../../context/AuthContext";
 import { TChatType } from "../../Types/user";
 import { socket } from "../../socket";
 import MediaUpload from "./MediaUpload";
-import Image from "next/image";
+import CameraUpload from "./CameraUpload";
+import Linkify from "linkify-react";
+import CustomImage from "./CustomImage";
+import ContactsSearch from "./ContactsSearch";
+import ContactBox from "./ContactBox";
 
 type Props = {
     friendId:string
@@ -59,11 +63,18 @@ const messageDocs = await getDocs(orderedMessagesRef);
     console.log(ref.current?.scrollHeight)
     ref.current?.scrollTo(0,ref.current?.scrollHeight)
   },[messages])
+
   useEffect(()=> {
     console.log(messages)
   },[messages])
+
   useEffect(()=>{
     socket.on("add_message",(data)=> {
+      console.log(data)
+      if (!(data.timestamp instanceof Timestamp)) {
+        console.log("not instance of timestamp")
+        data.timestamp = Timestamp.fromDate(new Date())
+      }
       console.log(data)
       setMessages(prevMessages => prevMessages ? [...prevMessages, data] : [data]);
     })
@@ -71,6 +82,7 @@ const messageDocs = await getDocs(orderedMessagesRef);
       socket.off("add_message")
     }
   },[])
+
   return (
     <>
       <Box
@@ -117,10 +129,11 @@ const messageDocs = await getDocs(orderedMessagesRef);
                   >
                     {
                     message.type==="text"?
-                    <Typography style={{ fontSize: "14px", color: "black" }}>
+                    <Linkify color="black" as="span" size={14} style={{ fontSize: "14px", color: "black" }}>
                       {message.content}
-                    </Typography>:
-                    message.type==="media"?<Image src={message.content} alt="media" width={100} height={100}/>:null
+                    </Linkify>:
+                    message.type==="media" || message.type==="camera"?<CustomImage src={message.content}/>:
+                    message.type==="contact"? <ContactBox contact={message.contact} from={"sender"}/>:null
                     }
                     <Typography
                       style={{
@@ -129,8 +142,7 @@ const messageDocs = await getDocs(orderedMessagesRef);
                         textAlign: "right",
                       }}
                     >
-                  {message.timestamp.split(" ")[1].split(":")[0]}:{message.timestamp.split(" ")[1].split(":")[1]}
-                      {/* {message.timestamp.toDate().toDateString()} */}
+                      {message.timestamp.toDate().getHours()}:{message.timestamp.toDate().getMinutes()}
                     </Typography>
                   </Box>
                 </Box>
@@ -156,10 +168,11 @@ const messageDocs = await getDocs(orderedMessagesRef);
                   >
                     {
                     message.type==="text"?
-                    <Typography style={{ fontSize: "14px", color: "black" }}>
+                    <Linkify color="black" as={"span"} size={14} style={{ fontSize: "14px", color: "white" }}>
                       {message.content}
-                    </Typography>:
-                    message.type==="media"?<Image src={message.content} alt="media" width={100} height={100}/>:null
+                    </Linkify>:
+                    message.type==="media" || message.type==="camera"?<CustomImage src={message.content}/>:
+                    message.type==="contact"? <ContactBox contact={message.contact} from={"reciever"}/>:null
                     }
                     <Typography
                       style={{
@@ -168,8 +181,7 @@ const messageDocs = await getDocs(orderedMessagesRef);
                         textAlign: "right",
                       }}
                     >
-                      {message.timestamp.split(" ")[1].split(":")[0]}:{message.timestamp.split(" ")[1].split(":")[1]}
-                        {/* {message.timestamp.split(" ")[4].split(":")[0]+":"+message.timestamp.split(" ")[4].split(":")[1]} */}
+                      {message.timestamp.toDate().getHours()}:{message.timestamp.toDate().getMinutes()}
                     </Typography>
                   </Box>
                 </Box>
@@ -191,7 +203,11 @@ const messageDocs = await getDocs(orderedMessagesRef);
             </Box>
           )}
           <div style={{height:"1px"}}></div>
-        </Box>:<MediaUpload setType={setType} docRef={docRef} uid={uid} setMessages={setMessages} friendId={friendId}/>}
+        </Box>:
+        type==='media'?<MediaUpload setType={setType} docRef={docRef} uid={uid} setMessages={setMessages} setDocRef={setDocRef} friendId={friendId}/>
+        :
+        type==='camera'?<CameraUpload setType={setType} docRef={docRef} uid={uid} setMessages={setMessages} setDocRef={setDocRef} friendId={friendId}/>:
+        type==='contacts'?<ContactsSearch setMessages={setMessages} setDocRef={setDocRef} setType={setType} docRef={docRef} uid={uid} friendId={friendId}/>:null}
         <Box sx={{ width: "100%", height: "7vh" }}>
           {openEmoji ? (
             <Box style={{ width: "100%", position: "fixed", bottom: "7vh" }}>
@@ -211,6 +227,7 @@ const messageDocs = await getDocs(orderedMessagesRef);
             setMessages={setMessages}
             type={type}
             setType={setType}
+            setDocRef={setDocRef}
           />
         </Box>
       </Box>

@@ -41,7 +41,7 @@ const Contact = ({friendId}:Props) => {
     }
   },[friendId])
   return (
-    <Box component={Link} href={{pathname:`/dashboard/${friendId}`,query:{fFirstName,fLastName,fBio,fDob,fDp,fEmail,fGender,fPhone,fTimeStamp}}} passHref sx={{color:`${label}`,textDecoration:"none",width:"100%",display:"flex",alignItems:"center",height:"8vh",cursor:"pointer",borderRadius:"10px",'&:hover': { backgroundColor: `${primary}`,transition:"all 0.2s" }}}>
+    <Box component={Link} href={{pathname:`/dashboard/${friendId}`,query:{fFirstName,fLastName,fBio,fDob,fDp,fEmail,fGender,fPhone,fTimeStamp}}} passHref sx={{color:`${label}`,textDecoration:"none",width:"100%",display:"flex",zIndex:3,alignItems:"center",height:"8vh",cursor:"pointer",borderRadius:"10px",'&:hover': { backgroundColor: `${primary}`,transition:"all 0.2s" }}}>
 
     <Box sx={{display:"flex",justifyContent:"center",alignItems:"center",width:"15%",height:"100%"}}>
 

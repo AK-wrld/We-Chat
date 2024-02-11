@@ -8,7 +8,8 @@ import CloseIcon from '@mui/icons-material/Close';
 type Props = {
     setOpen: React.Dispatch<React.SetStateAction<boolean>>,
     searchVal:string,
-    setSearchVal: React.Dispatch<React.SetStateAction<string>>
+    setSearchVal: React.Dispatch<React.SetStateAction<string>>;
+    placeholder?:string
 }
 
 const Search = styled('div')(({ theme }) => ({
@@ -52,7 +53,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-const SearchBar = ({setOpen,searchVal,setSearchVal}:Props) => {
+const SearchBar = ({setOpen,searchVal,setSearchVal,placeholder}:Props) => {
   return (
     <>
     <Box sx={{mt:2,width:"60%"}} >
@@ -63,7 +64,7 @@ const SearchBar = ({setOpen,searchVal,setSearchVal}:Props) => {
             <StyledInputBase
               onFocus={() => setOpen(true)}
 
-              placeholder="Search…"
+              placeholder={placeholder || "Search…"}
               inputProps={{ 'aria-label': 'search' }}
               
               value={searchVal}

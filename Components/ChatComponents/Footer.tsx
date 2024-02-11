@@ -8,6 +8,8 @@ import { sendMessage, setToast } from '../../Controllers/Controller';
 import { TChatType } from '../../Types/user';
 import { socket } from '../../socket';
 import ControlledOpenSpeedDial from './SpeedDial';
+import { Timestamp, doc, setDoc } from 'firebase/firestore';
+import { db } from '../../services/firebase.config';
 
 type Props = {
     openEmoji: boolean;
@@ -21,27 +23,26 @@ type Props = {
     friendId:string;
     type:string;
     setType:React.Dispatch<React.SetStateAction<string>>;
+    setDocRef:React.Dispatch<React.SetStateAction<any|null>>;
 }
 
-const Footer = ({openEmoji,setOpenEmoji,searchValue,setSearchValue,docRef,uid,setMessages,friendId,messages,type,setType}:Props) => {
+const Footer = ({openEmoji,setOpenEmoji,searchValue,setSearchValue,docRef,uid,setMessages,friendId,messages,type,setType,setDocRef}:Props) => {
   const [disabled,setDisabled] = useState(false)
   // eslint-disable-next-line no-unused-vars
-  
   useEffect(()=> {
     if(location.pathname === '/profile') {
         setDisabled(true)
     }
     
 },[disabled])
-const handleSendMsg = async()=> {
-  const currDate = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-  const send:boolean = await sendMessage(docRef,uid,searchValue,type,currDate)
+const sendMsg = async(docRef:any,uid:string,searchValue:string,type:string)=> {
+  const send:boolean = await sendMessage(docRef,uid,searchValue,type)
   if(send) {
     const message = {
       from:uid,
       content:searchValue,
       type,
-      timestamp:currDate
+      timestamp:Timestamp.fromDate(new Date())
     }
     // console.log(send)
     
@@ -54,6 +55,20 @@ const handleSendMsg = async()=> {
   }
   else {
     setToast("Something went wrong!","error")
+  }
+}
+const handleSendMsg = async()=> {
+  
+  if(docRef) {
+   sendMsg(docRef,uid,searchValue,type)
+
+  }
+  else {
+    const docRef = doc(db,"conversations",`${uid}_${friendId}`)
+    await setDoc(docRef,{user1:uid,user2:friendId},{merge:true}).then(async()=>{
+      sendMsg(docRef,uid,searchValue,type)
+      setDocRef(docRef)
+    })
   }
 }
 const setSearch = (value:string) => {

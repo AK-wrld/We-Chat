@@ -2,8 +2,8 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { PhoneNumberUtil } from 'google-libphonenumber';
 import { auth, db } from '../services/firebase.config';
 import { toast } from 'react-toastify';
-import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
-import { TAuthUser } from '../Types/user';
+import { collection, doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { TAuthUser, TContact } from '../Types/user';
 const phoneUtil = PhoneNumberUtil.getInstance();
 export const isPhoneValid = (phone: string) => {
     try {
@@ -89,6 +89,23 @@ export const getUser = async(uid:string)=> {
     }
   })
 }
+export const rejectReq = async(mUid:string,uid:string) => {
+  const reqRef = doc(db, "friendRequests", mUid);
+  const docSnap = await getDoc(reqRef);
+  if (docSnap.exists()) {
+      const { requests } = docSnap.data();
+      console.log(requests)
+      const newRequests = requests.filter(
+          (request: any) => request.uid !== uid
+      );
+      return setDoc(reqRef,{requests:newRequests},{merge:true}).then(()=> {
+         return true
+      })
+  }
+  else{
+      return false
+  }
+}
 export const unblockUser = async(mUid:string,uid:string)=> {
   const mBlockRef = doc(db,"blockedUsers",mUid)
   const mBlockSnap = await getDoc(mBlockRef)
@@ -105,14 +122,14 @@ export const unblockUser = async(mUid:string,uid:string)=> {
     await setDoc(blockRef,{isBlockedBy:newIds},{merge:true})
   }
 }
-export const sendMessage = async (docRef:any,from:string,content:string,type:string,currDate:string): Promise<boolean>=> {
+export const sendMessage = async (docRef:any,from:string,content:string,type:string): Promise<boolean>=> {
   const messageRef = collection(docRef,"messages")
   
   const message = {
     from,
     content,
     type,
-    timestamp:currDate
+    timestamp:serverTimestamp()
   }
   return setDoc(doc(messageRef),message).then(()=> {
     return true
@@ -121,4 +138,36 @@ export const sendMessage = async (docRef:any,from:string,content:string,type:str
     return false
   }
   )
+}
+export const sendContact = async (docRef:any,from:string,content:string,type:string,contact:TContact): Promise<boolean>=> {
+  const messageRef = collection(docRef,"messages")
+  
+  const message = {
+    from,
+    content,
+    contact,
+    type,
+    timestamp:serverTimestamp()
+  }
+  return setDoc(doc(messageRef),message).then(()=> {
+    return true
+  }).catch((err)=> {
+    console.log(err)
+    return false
+  }
+  )
+}
+export const checkIfFriend = async(uid:string,friendId:string) => {
+  console.log(friendId)
+  const friendRef = doc(db,"friends",friendId)
+  const friendSnap = await getDoc(friendRef)
+  if(friendSnap.exists()) {
+    const {friendsArr} = friendSnap.data()
+    if(friendsArr.includes(uid)) {
+      return true
+    }
+    else {
+      return false
+    }
+  }
 }

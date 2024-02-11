@@ -14,7 +14,7 @@ const actions = [
   { icon: <MmsIcon />, name: 'Send Media',type:"media" },
   { icon: <MicIcon />, name: 'Record Audio',type:"audio" },
   { icon: <CameraAltIcon />, name: 'Open Camera',type:"camera" },
-  { icon: <PermContactCalendarIcon />, name: 'Share Contact',type:"contact" },
+  { icon: <PermContactCalendarIcon />, name: 'Share Contact',type:"contacts" },
 ];
 
 export default function ControlledOpenSpeedDial({setType}:Props) {

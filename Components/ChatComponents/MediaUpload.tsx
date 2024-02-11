@@ -4,22 +4,24 @@ import { primary, title } from '../../StyledComponents/Global'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { FileUploader } from 'react-drag-drop-files';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { bucket } from '../../services/firebase.config';
+import { bucket, db } from '../../services/firebase.config';
 import { v4 } from 'uuid';
 import Image from 'next/image';
 import { StyleButton } from '../../StyledComponents/Styled';
 import { sendMessage, setToast } from '../../Controllers/Controller';
 import { TChatType } from '../../Types/user';
 import { socket } from '../../socket';
+import { Timestamp, doc, setDoc } from 'firebase/firestore';
 type Props = {
     setType:React.Dispatch<React.SetStateAction<string>>;
     docRef:any|null;
     uid:string;
     setMessages:React.Dispatch<React.SetStateAction<TChatType[]|null>>;
     friendId:string;
+    setDocRef:React.Dispatch<React.SetStateAction<any|null>>;
 }
 const fileTypes = ["JPG", "PNG", "GIF"];
-const MediaUpload = ({setType,docRef,uid,setMessages,friendId}:Props) => {
+const MediaUpload = ({setType,docRef,uid,setMessages,friendId,setDocRef}:Props) => {
     const [file, setFile] = useState<null | File>(null);
     const [url,setUrl] = useState<string>("")
     const [bucketUrl,setBucketUrl] = useState<string>("")
@@ -51,29 +53,41 @@ const MediaUpload = ({setType,docRef,uid,setMessages,friendId}:Props) => {
     console.log({url})
   }
   ,[url])
-  const setImg = async()=> {
-    const currDate = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-    const send:boolean = await sendMessage(docRef,uid,url,"media",currDate)
+  const sendImg = async(docRef:any,uid:string,searchValue:string,type:string)=> {
+    const send:boolean = await sendMessage(docRef,uid,searchValue,type)
     if(send) {
-        const message = {
-          from:uid,
-          content:url,
-          type:"media",
-          timestamp:currDate
-        }
-        // console.log(send)
-        
-        setMessages(prevMessages => prevMessages ? [...prevMessages, message] : [message]);
-        if(socket.connected) {
-          socket.emit("send_message",{uid:friendId,message})
-          socket.emit("notTyping",{uid:friendId})
-        }
-        setUrl("")
-        setType("text")
+      // const currDate = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+      const message = {
+        from:uid,
+        content:url,
+        type:"media",
+        timestamp:Timestamp.fromDate(new Date())
       }
-      else {
-        setToast("Something went wrong!","error")
+      // console.log(send)
+      
+      setMessages(prevMessages => prevMessages ? [...prevMessages, message] : [message]);
+      if(socket.connected) {
+        socket.emit("send_message",{uid:friendId,message})
+        socket.emit("notTyping",{uid:friendId})
       }
+      setUrl("")
+      setType("text")
+    }
+    else {
+      setToast("Something went wrong!","error")
+    }
+  }
+  const setImg = async()=> {
+    if(docRef) {
+      sendImg(docRef,uid,url,"media")
+    }
+    else {
+      const docRef = doc(db,"conversations",`${uid}_${friendId}`)
+      await setDoc(docRef,{user1:uid,user2:friendId},{merge:true}).then(async()=>{
+        sendImg(docRef,uid,url,"media")
+        setDocRef(docRef)
+      })
+    }
   } 
   const handleBack = ()=> {
     if(url!=="") {
@@ -87,6 +101,9 @@ const MediaUpload = ({setType,docRef,uid,setMessages,friendId}:Props) => {
         console.log(error)
         })
 
+    }
+    else {
+      setType("text")
     }
   }
   return (

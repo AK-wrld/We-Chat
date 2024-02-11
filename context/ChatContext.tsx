@@ -34,7 +34,7 @@ export const useChat = () => {
 export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const [friendsArr,setFriends] = useState<string[]>([])
   const [friendCount,setFriendCount] = useState(0)  
-  const [blockedUsers,setBlockedUsers] = useState<string[]>([])
+  const [blockedUsers,setBlockedUsers] = useState<string[]>([]) // blocked by me
   const [isBlockedByArr,setIsBlockedBy] = useState<string[]>([])
   return <ChatContext.Provider value={{friendsArr,setFriends,friendCount,setFriendCount,blockedUsers,setBlockedUsers,isBlockedByArr,setIsBlockedBy}}>{children}</ChatContext.Provider>;
 
