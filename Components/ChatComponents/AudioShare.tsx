@@ -15,7 +15,7 @@ import { socket } from '../../socket';
 import { v4 } from 'uuid';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { VoiceVisualizer, useVoiceVisualizer } from 'react-voice-visualizer';
-const AudioShare = ({setType,docRef,uid,setMessages,friendId,setDocRef}:TTypesOfChat) => {
+const AudioShare = ({setType,docRef,uid,setMessages,friendId,setDocRef,refer}:TTypesOfChat) => {
     const [audioUrl,setAudioUrl] = useState<string | null>(null)
     const [isPlay,setIsPlay] = useState(false)
     const waveformRef = useRef<WaveSurfer | null>(null);
@@ -103,7 +103,8 @@ const AudioShare = ({setType,docRef,uid,setMessages,friendId,setDocRef}:TTypesOf
               }
               // console.log(send)
               
-              setMessages(prevMessages => prevMessages ? [...prevMessages, message] : [message]);
+              setMessages(prevMessages => prevMessages ? [message,...prevMessages] : [message]);
+              refer.current?.scrollTo(0,refer.current?.scrollHeight)
               if(socket.connected) {
                 socket.emit("send_message",{uid:friendId,message})
                 socket.emit("notTyping",{uid:friendId})

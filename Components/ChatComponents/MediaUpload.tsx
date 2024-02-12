@@ -14,7 +14,7 @@ import { socket } from '../../socket';
 import { Timestamp, doc, setDoc } from 'firebase/firestore';
 
 const fileTypes = ["JPG", "PNG", "GIF"];
-const MediaUpload = ({setType,docRef,uid,setMessages,friendId,setDocRef}:TTypesOfChat) => {
+const MediaUpload = ({setType,docRef,uid,setMessages,friendId,setDocRef,refer}:TTypesOfChat) => {
     const [file, setFile] = useState<null | File>(null);
     const [url,setUrl] = useState<string>("")
     const [bucketUrl,setBucketUrl] = useState<string>("")
@@ -58,7 +58,8 @@ const MediaUpload = ({setType,docRef,uid,setMessages,friendId,setDocRef}:TTypesO
       }
       // console.log(send)
       
-      setMessages(prevMessages => prevMessages ? [...prevMessages, message] : [message]);
+      setMessages(prevMessages => prevMessages ? [message,...prevMessages] : [message]);
+      refer.current?.scrollTo(0,refer.current?.scrollHeight)
       if(socket.connected) {
         socket.emit("send_message",{uid:friendId,message})
         socket.emit("notTyping",{uid:friendId})

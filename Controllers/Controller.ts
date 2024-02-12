@@ -2,8 +2,8 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { PhoneNumberUtil } from 'google-libphonenumber';
 import { auth, db } from '../services/firebase.config';
 import { toast } from 'react-toastify';
-import { collection, doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { TAuthUser, TContact } from '../Types/user';
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, serverTimestamp, setDoc, startAfter } from 'firebase/firestore';
+import { TAuthUser, TChatType, TContact } from '../Types/user';
 const phoneUtil = PhoneNumberUtil.getInstance();
 export const isPhoneValid = (phone: string) => {
     try {
@@ -122,6 +122,17 @@ export const unblockUser = async(mUid:string,uid:string)=> {
     await setDoc(blockRef,{isBlockedBy:newIds},{merge:true})
   }
 }
+export const fetchMoreChats = async(docRef:any,lastFetchedChat:TChatType|null,lim:number)=> {
+  console.log("fetching more messages",lastFetchedChat)
+  const messagesRef = collection(docRef, 'messages');
+  const orderedMessagesRef = query(messagesRef, orderBy("timestamp", "desc"),startAfter(lastFetchedChat?.timestamp), limit(lim));
+const messageDocs = await getDocs(orderedMessagesRef);
+// return the messages
+const messages = messageDocs.docs.map(doc => doc.data() as TChatType);
+// console.log(messages)
+return messages
+}
+
 export const sendMessage = async (docRef:any,from:string,content:string,type:string): Promise<boolean>=> {
   const messageRef = collection(docRef,"messages")
   

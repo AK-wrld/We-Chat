@@ -60,4 +60,5 @@ export type TAuthUser = {
     setMessages:React.Dispatch<React.SetStateAction<TChatType[]|null>>;
     friendId:string;
     setDocRef:React.Dispatch<React.SetStateAction<any|null>>;
+    refer:React.RefObject<HTMLDivElement>;
   }

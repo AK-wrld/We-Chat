@@ -24,17 +24,19 @@ type Props = {
     type:string;
     setType:React.Dispatch<React.SetStateAction<string>>;
     setDocRef:React.Dispatch<React.SetStateAction<any|null>>;
+    refer:React.RefObject<HTMLDivElement>;
 }
 
-const Footer = ({openEmoji,setOpenEmoji,searchValue,setSearchValue,docRef,uid,setMessages,friendId,messages,type,setType,setDocRef}:Props) => {
+const Footer = ({openEmoji,setOpenEmoji,searchValue,setSearchValue,docRef,uid,setMessages,friendId,messages,type,setType,setDocRef,refer}:Props) => {
   const [disabled,setDisabled] = useState(false)
   // eslint-disable-next-line no-unused-vars
   useEffect(()=> {
     if(location.pathname === '/profile') {
         setDisabled(true)
     }
-    
+
 },[disabled])
+
 const sendMsg = async(docRef:any,uid:string,searchValue:string,type:string)=> {
   const send:boolean = await sendMessage(docRef,uid,searchValue,type)
   if(send) {
@@ -46,7 +48,8 @@ const sendMsg = async(docRef:any,uid:string,searchValue:string,type:string)=> {
     }
     // console.log(send)
     
-    setMessages(prevMessages => prevMessages ? [...prevMessages, message] : [message]);
+    setMessages(prevMessages => prevMessages ? [message,...prevMessages] : [message]);
+    refer.current?.scrollTo(0,refer.current?.scrollHeight)
     if(socket.connected) {
       socket.emit("send_message",{uid:friendId,message})
       socket.emit("notTyping",{uid:friendId})

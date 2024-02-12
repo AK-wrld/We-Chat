@@ -17,8 +17,9 @@ type Props = {
     friendId:string;
     setDocRef:React.Dispatch<React.SetStateAction<any|null>>;
     chatId:string;
+    refer:React.RefObject<HTMLDivElement>;
 }
-const SearchedContact = ({friendId,docRef,setDocRef,setMessages,setType,uid,chatId}:Props) => {
+const SearchedContact = ({friendId,docRef,setDocRef,setMessages,setType,uid,chatId,refer}:Props) => {
     const [fFirstName,setFFirstName] = useState("")
   const [fLastName,setFLastName] = useState("")
   const [fDp,setFDp] = useState("")
@@ -68,7 +69,8 @@ const SearchedContact = ({friendId,docRef,setDocRef,setMessages,setType,uid,chat
               timestamp:Timestamp.fromDate(new Date())
             }
             
-            setMessages(prevMessages => prevMessages ? [...prevMessages, message] : [message]);
+            setMessages(prevMessages => prevMessages ? [message,...prevMessages] : [message]);
+            refer.current?.scrollTo(0,refer.current?.scrollHeight)
             if(socket.connected) {
               socket.emit("send_message",{uid:chatId,message})
               socket.emit("notTyping",{uid:chatId})

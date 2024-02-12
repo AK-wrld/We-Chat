@@ -10,7 +10,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../services/firebase.config';
 import { capitalizeFirstLetter } from '../../Controllers/Controller';
 
-const ContactsSearch = ({setType,friendId,docRef,setDocRef,setMessages,uid}:TTypesOfChat) => {
+const ContactsSearch = ({setType,friendId,docRef,setDocRef,setMessages,uid,refer}:TTypesOfChat) => {
     const {friendsArr} = useChat()
     const [modifiedFriendsArr,setModifiedFriendsArr] = useState<string[]>([])
     const [filteredArr,setFilteredArr] = useState<string[]>([])
@@ -62,12 +62,12 @@ const ContactsSearch = ({setType,friendId,docRef,setDocRef,setMessages,uid}:TTyp
         {
             modifiedFriendsArr.length!==0 && filteredArr.length===0?
             modifiedFriendsArr.map((friend:string)=> {
-                return <SearchedContact key={friend} friendId={friend} chatId={friendId} setType={setType} docRef={docRef} setDocRef={setDocRef} setMessages={setMessages} uid={uid}/>
+                return <SearchedContact key={friend} friendId={friend} chatId={friendId} setType={setType} docRef={docRef} setDocRef={setDocRef} setMessages={setMessages} uid={uid} refer={refer}/>
             })
             :
             filteredArr.length!==0?
             filteredArr.map((friend:string)=> {
-                return <SearchedContact key={friend} friendId={friend} chatId={friendId} setType={setType} docRef={docRef} setDocRef={setDocRef} setMessages={setMessages} uid={uid}/>
+                return <SearchedContact key={friend} friendId={friend} chatId={friendId} setType={setType} docRef={docRef} setDocRef={setDocRef} setMessages={setMessages} uid={uid} refer={refer}/>
             }):
             <Box sx={{display:"flex",justifyContent:"center",alignItems:"center",maxHeight:"70vh",height:"65vh"}}>
                 <p>Your friend list seems a bit lonely. Time to search for new connections! 🌟</p>

@@ -35,6 +35,7 @@
     "react-dom": "^18",
     "react-drag-drop-files": "^2.3.10",
     "react-hook-form": "^7.49.2",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-international-phone": "^4.0.4",
     "react-material-ui-carousel": "^3.4.2",
     "react-player": "^2.14.1",

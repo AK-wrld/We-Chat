@@ -12,7 +12,7 @@ import { db } from '../../services/firebase.config';
 import { sendMessage, setToast } from '../../Controllers/Controller';
 import { socket } from '../../socket';
 
-const CameraUpload = ({setDocRef,docRef,friendId,setMessages,setType,uid}:TTypesOfChat) => {
+const CameraUpload = ({setDocRef,docRef,friendId,setMessages,setType,uid,refer}:TTypesOfChat) => {
     const [imgSrc,setImgSrc] = useState<string>("")
     const handleBack = ()=> {
       setImgSrc("")
@@ -30,7 +30,8 @@ const CameraUpload = ({setDocRef,docRef,friendId,setMessages,setType,uid}:TTypes
           }
           console.log(message)
           
-          setMessages(prevMessages => prevMessages ? [...prevMessages, message] : [message]);
+          setMessages(prevMessages => prevMessages ? [message,...prevMessages] : [message]);
+          refer.current?.scrollTo(0,refer.current?.scrollHeight)
           if(socket.connected) {
             socket.emit("send_message",{uid:friendId,message})
             socket.emit("notTyping",{uid:friendId})
