@@ -3,7 +3,6 @@ import { TTypesOfChat } from '../../Types/user'
 import { Box, Button } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { primary, text } from '../../StyledComponents/Global';
-import { VoiceRecorder } from 'react-voice-recorder-player';
 import ReactPlayer from 'react-player';
 import WaveSurfer from 'wavesurfer.js';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -15,12 +14,21 @@ import { bucket, db } from '../../services/firebase.config';
 import { socket } from '../../socket';
 import { v4 } from 'uuid';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { VoiceVisualizer, useVoiceVisualizer } from 'react-voice-visualizer';
 const AudioShare = ({setType,docRef,uid,setMessages,friendId,setDocRef}:TTypesOfChat) => {
     const [audioUrl,setAudioUrl] = useState<string | null>(null)
     const [isPlay,setIsPlay] = useState(false)
     const waveformRef = useRef<WaveSurfer | null>(null);
     const reactPlayerRef = useRef<ReactPlayer | null>(null);
     const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+    const recorderControls = useVoiceVisualizer();
+    const {
+        // ... (Extracted controls and states, if necessary)
+        recordedBlob,
+        error,
+        audioRef,
+        
+    } = recorderControls;
     useEffect(() => {
       return () => {
           if (waveformRef.current) {
@@ -28,23 +36,24 @@ const AudioShare = ({setType,docRef,uid,setMessages,friendId,setDocRef}:TTypesOf
           }
       };
   }, []);
-  
+
+    useEffect(() => {
+      if (!recordedBlob) return;
+      const url = URL.createObjectURL(recordedBlob)
+      setAudioUrl(url)
+      setAudioBlob(recordedBlob);
+  }, [recordedBlob, error]);
+
+  useEffect(() => {
+    if (!error) return;
+
+    console.error(error);
+}, [error]);
   
     const handleBack = ()=> {
         setType("text")
         setAudioUrl(null)
         setAudioBlob(null)
-        }
-        const handleRecording = (data:any) => {
-            console.log(data)
-            const url = URL.createObjectURL(data)
-           setAudioUrl(url)
-           setAudioBlob(data);
-          //  navigator.mediaDevices.getUserMedia({ audio: true })
-          //  .then(stream => {
-          //      stream.getTracks().forEach(track => track.stop());
-          //  })
-          //  .catch(err => console.error('Error stopping media stream:', err));
         }
         useEffect(() => {
             if (audioUrl) {
@@ -133,9 +142,7 @@ const AudioShare = ({setType,docRef,uid,setMessages,friendId,setDocRef}:TTypesOf
         <ArrowBackIcon onClick={()=>handleBack()} sx={{cursor:"pointer"}}/>
         <Box sx={{display:'flex',height:"90%",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:"20px",position:"relative"}}>
        {
-        !audioUrl && <VoiceRecorder
-        onRecordingEnd={(data: any)=>handleRecording(data)}
-      />
+        !audioUrl && <VoiceVisualizer ref={audioRef} controls={recorderControls} mainBarColor={text} secondaryBarColor='maroon' width={"250px"} height={"100px"} backgroundColor='black'/>
        } 
     {
         audioUrl && <Box sx={{display:"flex", alignItems:"center",gap:"10px",padding:"20px",border:"2px dashed"}}>

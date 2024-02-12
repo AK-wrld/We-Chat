@@ -32,7 +32,7 @@ const ChatScreen = ({friendId}:Props) => {
     const [type,setType] = useState("text")
     useEffect(() => {
       const fetchConversations = async () => {
-        console.log("running")
+        console.log("Ran for the first time")
         const docRef1 = doc(db, "conversations", `${uid}_${friendId}`);
         const docRef2 = doc(db, "conversations", `${friendId}_${uid}`);
         const [docs1, docs2] = await Promise.all([getDoc(docRef1), getDoc(docRef2)]);
