@@ -23,9 +23,9 @@ const ProfilePreview = () => {
             
         }
     },[disabled])
-    useEffect(()=> {
-        console.log(location.pathname)
-    },[location.pathname])
+    // useEffect(()=> {
+    //     console.log(location.pathname)
+    // },[location.pathname])
   return (
     <>
     {

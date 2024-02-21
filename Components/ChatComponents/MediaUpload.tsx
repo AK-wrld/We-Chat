@@ -12,6 +12,7 @@ import { sendMessage, setToast } from '../../Controllers/Controller';
 import { TTypesOfChat } from '../../Types/user';
 import { socket } from '../../socket';
 import { Timestamp, doc, setDoc } from 'firebase/firestore';
+import Compressor from 'compressorjs';
 
 const fileTypes = ["JPG", "PNG", "GIF"];
 const MediaUpload = ({setType,docRef,uid,setMessages,friendId,setDocRef,refer}:TTypesOfChat) => {
@@ -21,7 +22,16 @@ const MediaUpload = ({setType,docRef,uid,setMessages,friendId,setDocRef,refer}:T
     const [loading,setLoading] = useState(false)
   const handleChange = (file: File) => {
     console.log(file)
-    setFile(file);
+    if(!file) return
+   // eslint-disable-next-line no-unused-vars
+   const compressor =  new Compressor(file,
+      {
+        quality:0.6,
+        success(result) {
+          const compressedFile = new File([result], file.name, { type: result.type });
+      setFile(compressedFile);
+        },
+      })
   };
   useEffect(()=>{
     const upload = async () => {

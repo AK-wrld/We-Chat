@@ -12,7 +12,9 @@ import { primary } from '../../StyledComponents/Global';
 import { useSearchParams } from "next/navigation";
 import { Avatar } from '@mui/material';
 import { socket } from '../../socket';
-
+type Props ={
+  setOpenFProfile:React.Dispatch<React.SetStateAction<boolean>>;
+}
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -55,7 +57,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function SearchAppBar() {
+export default function SearchAppBar({setOpenFProfile}:Props) {
   const searchParams = useSearchParams()
   const [typing, isTyping] = React.useState(false)
   React.useEffect(()=> {
@@ -87,7 +89,7 @@ export default function SearchAppBar() {
           >
             <ArrowDownwardIcon />
           </IconButton>
-          <Avatar src={searchParams.get("fDp") || "/logo.png"} sx={{marginRight:"10px",cursor:"pointer"}}/>
+          <Avatar src={searchParams.get("fDp") || "/logo.png"} onClick={()=>setOpenFProfile(prev=>!prev)} sx={{marginRight:"10px",cursor:"pointer"}}/>
           <Box sx={{display:"flex",flexDirection:"column",flex:1}}>
           <Typography
             variant="h6"
