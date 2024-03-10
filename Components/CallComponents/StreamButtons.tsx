@@ -7,7 +7,6 @@ import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import CallEndIcon from '@mui/icons-material/CallEnd';
 import Peer from "simple-peer";
 import { socket } from '../../socket';
-import { useRouter } from 'next/navigation';
 
 type Props = {
     muteMic:boolean,
@@ -18,21 +17,47 @@ type Props = {
     setMyPeer:React.Dispatch<React.SetStateAction<Peer.Instance | null>>,
     friendId:string,
     setIncomingCall:React.Dispatch<React.SetStateAction<boolean>>,
-    recPeer:Peer.Instance | null
-}
-const StreamButtons = ({muteMic,setMuteMic,muteVid,setMuteVid,myPeer,setMyPeer,friendId,setIncomingCall,recPeer}:Props) => {
-  const router = useRouter()
-  const handleCallEnd = ()=> {
+    recPeer:Peer.Instance | null,
+    setRecStream:React.Dispatch<React.SetStateAction<MediaStream | null>>,
+    setMyStream:React.Dispatch<React.SetStateAction<MediaStream | null>>,
+    setRecPeer:React.Dispatch<React.SetStateAction<Peer.Instance | null>>,
+    setCallerSignal:React.Dispatch<React.SetStateAction<any>>,
+    myStream:MediaStream | null,
+    recStream:MediaStream | null,
+    myStreamRef:React.MutableRefObject<HTMLVideoElement|null>,
+    recStreamRef:React.MutableRefObject<HTMLVideoElement|null>
     
+}
+const StreamButtons = ({muteMic,setMuteMic,muteVid,setMuteVid,myPeer,setMyPeer,friendId,setIncomingCall,recPeer,setRecStream,setMyStream,setRecPeer,setCallerSignal,myStream,recStream,myStreamRef,recStreamRef}:Props) => {
+
+  const handleCallEnd = ()=> {
+    myStream?.getTracks().forEach(track => {
+      track.stop();
+  });
+  
+    recStream?.getTracks().forEach(track => {
+      track.stop();
+  });
+  
     myPeer?.destroy()
     recPeer?.destroy()
+    if (recStreamRef.current) {
+      recStreamRef.current.srcObject = null;
+    }
+  if(myStreamRef.current) {
+      myStreamRef.current.srcObject = null;
+  }
     setMyPeer(null)
+    setRecPeer(null)
     setIncomingCall(false)
+    setRecStream(null)
+    setMyStream(null)
+    setCallerSignal(null)
     if(socket.connected) {
       console.log("emitting end call")
       socket.emit("endCall",friendId)
     }
-    router.push('/dashboard')
+    window.location.href = '/dashboard'
   }
   return (
     <>

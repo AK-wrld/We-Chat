@@ -20,7 +20,7 @@ const CallScreen = ({params}:CallScreenProps) => {
     const {friendId} = params
     const {uid} = useAuth()
     const {firstName,lastName,dp} = useProfile()
-    const {myStream,setMyStream,setRecStream,recStream,setRecPeer,recPeer,setIncomingCall,setMyPeer,myPeer} =useCall()
+    const {myStream,setMyStream,setRecStream,recStream,setRecPeer,recPeer,setIncomingCall,setMyPeer,myPeer,setCallerSignal} =useCall()
     const router = useRouter()
     // eslint-disable-next-line no-unused-vars
     const [muteMic,setMuteMic] = useState<boolean>(false)
@@ -60,7 +60,7 @@ const CallScreen = ({params}:CallScreenProps) => {
         // let isCancelled = false;
     
         if(myStream) {
-            console.log("worked")
+            // console.log(myStream)
             const peer = new Peer({
                 initiator: true,
                 trickle: false,
@@ -82,8 +82,8 @@ const CallScreen = ({params}:CallScreenProps) => {
             });
             setMyPeer(peer)
             peer.on("signal", data => {
-                console.log(data)
-                socket.emit("callUser", { userToCall: friendId, signalData: data, from: uid, profileData:{name: `${firstName} ${lastName}`,dp} })
+                console.log({myStream,data})
+                myStream && socket.emit("callUser", { userToCall: friendId, signalData: data, from: uid, profileData:{name: `${firstName} ${lastName}`,dp} })
             })
             peer.on("stream", stream => {
                 console.log(stream)
@@ -121,12 +121,28 @@ const CallScreen = ({params}:CallScreenProps) => {
             })
             socket.on("call_ended",()=> {
                 console.log("call ended")
+                myStream?.getTracks().forEach(track => {
+                    track.stop();
+                });
+                recStream?.getTracks().forEach(track => {
+                    track.stop();
+                });
+                if (recStreamRef.current) {
+                    recStreamRef.current.srcObject = null;
+                  }
+                if(myStreamRef.current) {
+                    myStreamRef.current.srcObject = null;
+                }
                 recPeer?.destroy()
                 myPeer?.destroy()
                 setRecPeer(null)
+                setMyPeer(null)
                 setRecStream(null)
                 setIncomingCall(false)
-                router.push("/dashboard")
+                setRecStream(null)
+                setMyStream(null)
+                setCallerSignal(null)
+                window.location.href = '/dashboard'
             })
         }
         else {
@@ -161,7 +177,7 @@ const CallScreen = ({params}:CallScreenProps) => {
         <StreamBox streamRef={myStreamRef} muteMic={muteMic} muteVid={muteVid}/>
         {/* {recStream!==null && <StreamBox streamRef={recStreamRef} muteMic={muteMic} muteVid={muteVid}/>} */}
        <StreamBox streamRef={recStreamRef}/>
-        <StreamButtons muteMic={muteMic} setMuteMic={setMuteMic} muteVid={muteVid} setMuteVid={setMuteVid} myPeer={myPeer} setMyPeer={setMyPeer} friendId={friendId} setIncomingCall={setIncomingCall} recPeer={recPeer}/>
+        <StreamButtons muteMic={muteMic} setMuteMic={setMuteMic} muteVid={muteVid} setMuteVid={setMuteVid} myPeer={myPeer} setMyPeer={setMyPeer} friendId={friendId} setIncomingCall={setIncomingCall} recPeer={recPeer} setRecStream={setRecStream} setMyStream={setMyStream} setRecPeer={setRecPeer} setCallerSignal={setCallerSignal} myStream={myStream} recStream={recStream} myStreamRef={myStreamRef} recStreamRef={recStreamRef}/>
     </Box>
     </>
   )
