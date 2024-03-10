@@ -1,22 +1,32 @@
-import { Avatar, Box } from '@mui/material'
+import { Box } from '@mui/material'
 import React from 'react'
 import { StyledText } from '../../StyledComponents/Styled'
-import AddIcCallIcon from '@mui/icons-material/AddIcCall';
-import { primary } from '../../StyledComponents/Global';
-const Calls = () => {
+import Call from './Call';
+type Props = {
+  friendsArr:string[]
+}
+const Calls = ({friendsArr}:Props) => {
+  // useEffect(()=> {
+  //   console.log(friendsArr)
+  // },[friendsArr])
   return (
-    <Box sx={{width:"100%",height:"60px",display:"flex",my:1,alignItems:"center",gap:"10px",cursor:"pointer",borderRadius:"10px",'&:hover': { backgroundColor: `${primary}`,transition:"all 0.2s" }}}>
-    <Box sx={{display:"flex",justifyContent:"center",alignItems:"center",width:"15%",height:"100%"}}>
-
-  <Avatar src="/logo.png"/>
-    </Box>
-  <Box sx={{width:"75%",height:"100%",alignItems:"center",display:"flex",cursor:"pointer"}}>
-    <StyledText style={{fontSize:"14px",margin:"0px"}}>Test User</StyledText>
+    <>
+    {friendsArr.length!==0?
+      <Box sx={{width:"100%",height:"max-content",display:"flex",my:1,alignItems:"center",flexDirection:"column",gap:"10px",}}>
+      {friendsArr && friendsArr.map((friend:string,index:number)=>
+      
+      <Call key={friend} friendId={friend}/>
+      )}
+      
+     
   </Box>
-  <Box sx={{width:"10px",height:"100%",display:"flex",alignItems:"center",cursor:"pointer"}}>
-    <AddIcCallIcon/>
-  </Box>
-</Box>
+ :
+  <Box sx={{display:"flex",justifyContent:"center",alignItems:"center",maxHeight:"70vh",height:"65vh"}}>
+     <StyledText style={{textAlign:"center",color:"gray"}}>Your friend list seems a bit lonely. Time to search for new connections! 🌟</StyledText>
+   </Box> }
+    
+    </>
+ 
   )
 }
 

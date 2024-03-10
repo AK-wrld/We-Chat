@@ -62,3 +62,8 @@ export type TAuthUser = {
     setDocRef:React.Dispatch<React.SetStateAction<any|null>>;
     refer:React.RefObject<HTMLDivElement>;
   }
+  export type TFriendsType = {
+    count:number;
+    friendsArr:string[];
+    user:string;
+  }

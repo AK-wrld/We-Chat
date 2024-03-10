@@ -46,9 +46,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const unsubscribe = auth.onAuthStateChanged(async(authUser) => {
       setLoading(true);
       if (authUser) {
-        console.log(authUser);
+        // console.log(authUser);
 
         const{uid} = authUser;
+       
         setUid(uid);
         const blockedRef = doc(db,"blockedUsers",uid)
         const blockedSnap = await getDoc(blockedRef)
@@ -82,6 +83,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         } else {
 
         const { email, displayName, photoURL,phoneNumber} = authUser;
+        console.log(uid)
         let firstName = "";
         let lastName = "";
         if (displayName) {

@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from "../../context/AuthContext";
 import { ProfileProvider } from "../../context/ProfileContext";
 import { ChatProvider } from "../../context/ChatContext";
+import { CallProvider } from "../../context/CallContext";
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -26,12 +27,12 @@ export default function RootLayout({
       <ProfileProvider>
         <ChatProvider>
         <AuthProvider>
-        
+        <CallProvider>
         <div style={{"display":"flex","width":"100%"}}>
       <ToastContainer/>
         {children}
         </div>
-        
+        </CallProvider>
         </AuthProvider>
         </ChatProvider>
         </ProfileProvider>

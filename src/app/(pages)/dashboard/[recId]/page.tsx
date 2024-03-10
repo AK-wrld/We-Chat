@@ -7,6 +7,8 @@ import {motion} from 'framer-motion'
 import CloseIcon from '@mui/icons-material/Close';
 import { Box } from '@mui/material';
 import ProfilePreview from '../../../../../Components/ProfileComponents/ProfilePreview';
+import IncomingCall from '../../../../../Components/CallComponents/IncomingCall';
+import { useCall } from '../../../../../context/CallContext';
 type ContactPageProps = {
   params: {
     recId: string; // or number, or whatever type recId should be
@@ -15,6 +17,7 @@ type ContactPageProps = {
 const ContactPage = ({params}:ContactPageProps) => {
   const {recId} = params
   const {openProfile,setOpenProfile} = useProfile()
+  const {incomingCall} = useCall()
   const variants = {
     open: {opacity:1,width:"100%"},
     closed: {opacity:0,width:"0%"}
@@ -44,7 +47,7 @@ const ContactPage = ({params}:ContactPageProps) => {
       </Box>
     </motion.div>
     
-
+{incomingCall && <IncomingCall/>}
     </>
   )
 }

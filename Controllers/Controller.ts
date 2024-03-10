@@ -3,7 +3,7 @@ import { PhoneNumberUtil } from 'google-libphonenumber';
 import { auth, db } from '../services/firebase.config';
 import { toast } from 'react-toastify';
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, serverTimestamp, setDoc, startAfter } from 'firebase/firestore';
-import { TAuthUser, TChatType, TContact } from '../Types/user';
+import { TAuthUser, TChatType, TContact, TFriendsType } from '../Types/user';
 const phoneUtil = PhoneNumberUtil.getInstance();
 export const isPhoneValid = (phone: string) => {
     try {
@@ -89,6 +89,20 @@ export const getUser = async(uid:string)=> {
     }
   })
 }
+
+export const getFriends = async(uid:string)=> {
+  const friendsRef = doc(db,"friends",uid)
+  return getDoc(friendsRef).then((doc)=> {
+    if(doc.exists()) {
+      return doc.data() as TFriendsType
+    }
+    else {
+      return null
+    }
+  
+  })
+}
+
 export const rejectReq = async(mUid:string,uid:string) => {
   const reqRef = doc(db, "friendRequests", mUid);
   const docSnap = await getDoc(reqRef);

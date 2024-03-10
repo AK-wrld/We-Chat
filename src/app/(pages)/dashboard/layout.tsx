@@ -15,10 +15,10 @@ import Groups from '../../../../Components/Dashboard/Groups';
 import Calls from '../../../../Components/Dashboard/Calls';
 import { StyledGrid } from '../../../../StyledComponents/Styled';
 import { useAuth } from '../../../../context/AuthContext';
-import { collection, doc, getDoc, onSnapshot, query, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore';
 import  { db} from '../../../../services/firebase.config';
 import { useProfile } from '../../../../context/ProfileContext';
-import { capitalizeFirstLetter, setToast} from '../../../../Controllers/Controller';
+import { capitalizeFirstLetter, getFriends, setToast} from '../../../../Controllers/Controller';
 import { TAuthUser, TFriendRequest } from '../../../../Types/user';
 import { socket } from '../../../../socket';
 import Notifications from '../../../../Components/Notifications/Notifications';
@@ -66,7 +66,7 @@ const Layout = ({children}:LayoutProps) => {
   }, []);
   const {uid} =useAuth()
   const {setSenderColor,setRecieverColor,setBgType,setBgImage,setBgColor} = useProfile()
-  const {blockedUsers,isBlockedByArr} = useChat()
+  const {blockedUsers,isBlockedByArr,friendsArr,setFriendCount,setFriends} = useChat()
     const [value, setValue] = useState(0);
   const [open,setOpen] = useState(false);
   const [searchVal,setSearchVal] = useState('');
@@ -88,6 +88,7 @@ const Layout = ({children}:LayoutProps) => {
       unsubscribe = onSnapshot(reqRef, (doc) => {
         if (doc.exists()) {
           const { requests } = doc.data();
+          console.log(requests)
           setReqCount(requests.length);
         }
       });
@@ -115,41 +116,48 @@ const Layout = ({children}:LayoutProps) => {
     return () => {
       unsubscribe(); 
     };
-  }, [setBgColor, setBgImage, setBgType, setRecieverColor, setSenderColor, uid]);
+  }, [setBgColor, setBgImage, setBgType, setRecieverColor, setSenderColor, uid,setReqCount]);
   useEffect(()=> {
-    console.log({isBlockedByArr,blockedUsers})
-  },[isBlockedByArr,blockedUsers])
+    const fetchFriends = async()=> {
+      if(uid) {
+        const data = await getFriends(uid)
+        if(data) {
+          setFriends(data.friendsArr)
+          setFriendCount(data.count)
+        }
+      }
+    }
+    fetchFriends()
+  },[setFriendCount,setFriends,uid])
+
   useEffect(() => {
     if(value===0) {
-      
-      const userRef = collection(db, "user");
-      const val = capitalizeFirstLetter(searchVal);
-    // console.log(val)
-      const q = query(userRef, where("firstName", "==", val), where("uid", "!=", uid));
-    
-      const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchData = async () => {
+        const userRef = collection(db, "user");
+        const val = capitalizeFirstLetter(searchVal);
+        const q = query(userRef, where("firstName", "==", val), where("uid", "!=", uid));
+       
+        const snapshot = await getDocs(q);
+  
         const newData: any[] = [];
-    
-        snapshot.forEach((doc) => {
+  
+        snapshot.docs.forEach((doc) => {
           // handle blocked requests
           if(!isBlockedByArr.includes(doc.id))
           if(!blockedUsers.includes(doc.id)) {
             newData.push({ id: doc.id, ...doc.data(), isBlocked: false });
             // console.log(newData[0].isBlocked)
           }else {
-
+            console.log("didnt")
             newData.push({ id: doc.id, ...doc.data(),isBlocked:true });
             // console.log(newData[0].isBlocked)
-
           }
         });
         // console.log(newData)
         setSearchContactArr(newData);
-      });
-    
-      return () => {
-        unsubscribe(); // Unsubscribe when the component unmounts
-      };
+      }
+  
+      fetchData();
     }
   }, [blockedUsers, isBlockedByArr, searchVal, uid, value]);
   const handleNotis = ()=>{
@@ -182,7 +190,7 @@ const Layout = ({children}:LayoutProps) => {
       </Tabs>
       <TabPanel value="0">
         <SearchBox open={open} value={value} setOpen={setOpen} openNotis={openNotis} setOpenNotis={setOpenNotis} searchContactArr={searchContactArr}/>
-        <Contacts/>
+        <Contacts friendsArr={friendsArr}/>
       </TabPanel>
       <TabPanel value="1">
       <SearchBox open={open} value={value} setOpen={setOpen} openNotis={openNotis} setOpenNotis={setOpenNotis} searchContactArr={searchContactArr}/>
@@ -190,7 +198,7 @@ const Layout = ({children}:LayoutProps) => {
       </TabPanel>
       <TabPanel value="2">
       <SearchBox open={open} value={value} setOpen={setOpen} openNotis={openNotis} setOpenNotis={setOpenNotis} searchContactArr={searchContactArr}/>
-       <Calls/>
+       <Calls friendsArr={friendsArr}/>
       
       </TabPanel>
     </TabContext>

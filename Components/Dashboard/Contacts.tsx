@@ -1,44 +1,15 @@
 "use client";
 import {Box } from '@mui/material'
-import React, { useEffect } from 'react'
-import { useChat } from '../../context/ChatContext';
+import React from 'react'
 import Contact from './Contact';
-import { useAuth } from '../../context/AuthContext';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../../services/firebase.config';
 import { StyledText } from '../../StyledComponents/Styled';
 
-const Contacts = () => {
-  const {friendsArr,setFriendCount,setFriends} = useChat()
-  const {uid} = useAuth()
+type Props = {
+  friendsArr: string[],
+}
+const Contacts = ({friendsArr}:Props) => {
 
-  useEffect(() => {
-    const fetchData = async () => {
-        if(uid) {
-         console.log("test")
 
-       const friendRef = doc(db, "friends", uid);
-      //  console.log(friendRef)
-       const friendSnap = await getDoc(friendRef);
-       if(friendSnap.exists()) {
-         const {friendsArr, count} = friendSnap.data();
-         console.log(friendsArr);
-         setFriends(friendsArr);
-         setFriendCount(count);
-     }
-        }
-        // else {
-        //     return <p>Loading....</p>
-        // }
-      }
- 
-  
-    fetchData();
-  }, [setFriendCount, setFriends, uid]);
-  // useEffect(()=> {
-  //   console.log(uid)
-  
-  // },[uid])
 
   return (
     <>

@@ -63,7 +63,7 @@ const BasicProfile = ({handleNext,handleBack,handleReset,activeStep,steps}:Props
                 id="firstName"
                 aria-describedby="my-helper-text"
                 required
-                defaultValue={firstName}
+                defaultValue={firstName || ''}
                 style={{minWidth:"80%"}}
                 onChange={(event) => setFirstName(event.target.value)}
               />
@@ -75,7 +75,7 @@ const BasicProfile = ({handleNext,handleBack,handleReset,activeStep,steps}:Props
               <Input
                 id="lastName"
                 aria-describedby="my-helper-text"
-                defaultValue={lastName}
+                defaultValue={lastName || ''}
                 style={{minWidth:"80%"}}
                 onChange={(event) => setLastName(event.target.value)}
               />
@@ -87,7 +87,7 @@ const BasicProfile = ({handleNext,handleBack,handleReset,activeStep,steps}:Props
               <Input
                 id="email"
                 aria-describedby="my-helper-text"
-                defaultValue={email}
+                defaultValue={email || ''}
                 style={{minWidth:"80%"}}
                 type="email"
                 onChange={(event) => setEmail(event.target.value)}

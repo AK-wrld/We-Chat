@@ -5,9 +5,12 @@ import { useProfile } from '../../../../context/ProfileContext';
 import CloseIcon from '@mui/icons-material/Close';
 import { Box } from '@mui/material';
 import ProfilePreview from '../../../../Components/ProfileComponents/ProfilePreview';
+import IncomingCall from '../../../../Components/CallComponents/IncomingCall';
+import { useCall } from '../../../../context/CallContext';
 
 const Dashboard = () => {
   const {openProfile,setOpenProfile} = useProfile()
+  const {incomingCall} = useCall()
 const variants = {
   open: {opacity:1,width:"100%"},
   closed: {opacity:0,width:"0%"}
@@ -28,6 +31,7 @@ const variants = {
       <ProfilePreview/>
       </Box>
     </motion.div>
+    {incomingCall && <IncomingCall/>}
     </>
   )
 }
