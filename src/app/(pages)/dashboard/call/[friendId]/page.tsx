@@ -57,10 +57,10 @@ const CallScreen = ({params}:CallScreenProps) => {
     },[])
 
 
-    useEffect(()=> {
-    
-        if(myStream) {
-            const peer = new Peer({
+    useEffect(() => {
+        let peer: Peer.Instance | undefined;
+        if (myStream) {
+            peer = new Peer({
                 initiator: true,
                 trickle: false,
                 config: {
@@ -77,32 +77,37 @@ const CallScreen = ({params}:CallScreenProps) => {
                         }
                     ]
                 },
-                stream:myStream,
+                stream: myStream,
             });
-            setMyPeer(peer)
+            setMyPeer(peer);
             peer.on("signal", data => {
-                console.log({myStream,data})
-                myStream && socket.emit("callUser", { userToCall: friendId, signalData: data, from: uid, profileData:{name: `${firstName} ${lastName}`,dp} })
-            })
+                console.log({ myStream, data });
+                console.log("calling user");
+                socket.emit("callUser", { userToCall: friendId, signalData: data, from: uid, profileData: { name: `${firstName} ${lastName}`, dp } });
+            });
             peer.on("stream", stream => {
-                console.log(stream)
-                setRecStream(stream)
-                if(recStreamRef.current) {
-                    recStreamRef.current.srcObject = stream
+                console.log(stream);
+                setRecStream(stream);
+                if (recStreamRef.current) {
+                    recStreamRef.current.srcObject = stream;
                 }
-            })
+            });
             socket.on("call_accepted", signal => {
-                console.log(signal)
+                console.log(signal);
+                if(peer)
                 peer.signal(signal);
-            })
+            });
         }
     
-        return ()=> {
-            socket.off("callUser")
-            socket.off("call_accepted")
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[myStream])
+        return () => {
+            socket.off("callUser");
+            socket.off("call_accepted");
+            if (peer) {
+                peer.destroy();
+            }
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [myStream]);
     useEffect(()=>{
         
         if(socket.connected) {

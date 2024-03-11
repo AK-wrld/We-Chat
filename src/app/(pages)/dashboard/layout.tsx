@@ -23,6 +23,7 @@ import { TAuthUser, TFriendRequest } from '../../../../Types/user';
 import { socket } from '../../../../socket';
 import Notifications from '../../../../Components/Notifications/Notifications';
 import { useChat } from '../../../../context/ChatContext';
+import { useCall } from '../../../../context/CallContext';
 
 
 type LayoutProps = {
@@ -30,7 +31,7 @@ type LayoutProps = {
   };
 
 const Layout = ({children}:LayoutProps) => {
-
+  const {incomingCall,setIncomingCall,setCaller,setCallerName,setCallerDp,setCallerSignal} = useCall()
   const [notificationSent,setNotificationSent] = useState(false)
   useEffect(() => {
     socket.connect();
@@ -51,6 +52,23 @@ const Layout = ({children}:LayoutProps) => {
       console.log(data)
       setToast(data,"")
     })
+    socket.on("incoming_call",(data)=> {
+      console.log("call is coming")
+      if(!incomingCall) {
+        console.log("incoming call")
+        setIncomingCall(true)
+        setCaller(data.from)
+        setCallerName(data.profileData.name)
+        setCallerDp(data.profileData.dp)
+        setCallerSignal(data.signalData)
+      }
+      else {
+        if(uid) {
+          socket.emit("busyCall",{caller:data.from,me:uid})
+
+        }
+      }
+    })
     socket.on('disconnect', () => {
       console.log('Disconnected from the server');
     });
@@ -61,6 +79,8 @@ const Layout = ({children}:LayoutProps) => {
       socket.off("friend_request")
       socket.off("joined_room")
       socket.off("friend_req_unsent")
+      socket.off("incoming_call")
+      socket.off("busy_call")
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
