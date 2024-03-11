@@ -9,8 +9,8 @@ const App = () => {
 
 useEffect(() => {
   if(loading===false) {
-
-    if (uid === null) {
+    console.log(uid)
+    if (uid === '') {
       console.log("user not logged in");
       router.push("/auth/login");
     } else {
