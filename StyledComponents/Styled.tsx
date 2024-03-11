@@ -2,7 +2,7 @@
 import { Badge, Grid, InputLabel } from '@mui/material'
 import { errorColor, label, labelSize, primary, subTitleSize, text, textSize, title, titleSize } from './Global';
 import styled from '@emotion/styled'
-
+import { motion } from 'framer-motion';
 export const StyledGrid = styled(Grid)`
 background:${primary};
 min-height:100vh;
@@ -10,6 +10,10 @@ padding:0;
 display:flex;
 `
 export const StyledTitle = styled.h1`
+color:${title};
+font-size: ${titleSize}
+`
+export const MotionStyledTitle = styled(motion.div)`
 color:${title};
 font-size: ${titleSize}
 `

@@ -49,7 +49,7 @@ const ChatScreenPreview = () => {
         }}
       >
         <Box sx={{ width: "100%", position: "relative" }}>
-          <Navbar />
+          <Navbar setOpenFProfile={()=>{}}/>
         </Box>
         <Box ref={ref} sx={{ height: "85vh", overflowY: "scroll",overflowX:"hidden",overflowAnchor:"none" }}>
           {messages ? (
@@ -156,6 +156,15 @@ const ChatScreenPreview = () => {
             setOpenEmoji={setOpenEmoji}
             searchValue={searchValue}
             setSearchValue={setSearchValue}
+            docRef={null}
+            uid={"uid"}
+            messages={null}
+            friendId={"friendId"}
+            setMessages={()=>{}}
+            type={"type"}
+            setType={()=>{}}
+            setDocRef={()=>{}}
+            refer={ref}
           />
         </Box>
       </Box>

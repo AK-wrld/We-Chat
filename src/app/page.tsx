@@ -4,21 +4,21 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 
 const App = () => {
-  const { user,loading } = useAuth();
+  const { uid,loading } = useAuth();
   const router = useRouter();
 
 useEffect(() => {
   if(loading===false) {
 
-    if (user === null) {
+    if (uid === null) {
       console.log("user not logged in");
       router.push("/auth/login");
     } else {
       console.log("user logged in");
-      router.push("/profile");
+      router.push("/dashboard");
     }
   }
-  }, [user, router,loading]);
+  }, [uid, router,loading]);
 
 
   return (

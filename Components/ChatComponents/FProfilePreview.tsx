@@ -1,5 +1,5 @@
 import { Avatar, Box, Button, Grid } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { StyledLabel,StyledText } from '../../StyledComponents/Styled';
 import dayjs from 'dayjs';
 import { primary } from '../../StyledComponents/Global';

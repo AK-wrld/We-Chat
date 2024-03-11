@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import {easeInOut, motion, useAnimation} from 'framer-motion'
-import {StyleButton, StyledSubTitle, StyledText, StyledTitle } from '../../StyledComponents/Styled'
+import {StyleButton, StyledSubTitle, StyledText,MotionStyledTitle } from '../../StyledComponents/Styled'
 import Stack from '@mui/material/Stack';
 import { Avatar, FormControl} from '@mui/material';
 import { text} from '../../StyledComponents/Global';
@@ -102,10 +102,10 @@ const LoginPage = () => {
     
    
     <Stack style={{height:"100vh","alignItems":"center",justifyContent:"center",position:"relative"}} spacing={5}>
-      <StyledTitle as={motion.div} 
+      <MotionStyledTitle 
       initial={{ opacity: 0, y: "50%" }} animate={controls}>
     We Chat
-    </StyledTitle>
+    </MotionStyledTitle>
     <motion.div style={{display:"flex",alignItems:"center",flexDirection:"column",margin:"0"}}
     initial={{opacity:0}}
     animate={{

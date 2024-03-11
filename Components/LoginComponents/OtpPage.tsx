@@ -1,6 +1,6 @@
 "use client";
 import {easeInOut, motion, useAnimation} from 'framer-motion'
-import {StyleButton, StyledSubTitle, StyledTitle } from '../../StyledComponents/Styled'
+import {StyleButton, StyledSubTitle, MotionStyledTitle } from '../../StyledComponents/Styled'
 import Stack from '@mui/material/Stack';
 import {FormControl, Input, InputLabel} from '@mui/material';
 import Link from 'next/link';
@@ -70,9 +70,9 @@ const OtpPage = () => {
   return (
     <>
       <Stack style={{height:"100vh","alignItems":"center",justifyContent:"center"}} spacing={5}>
-      <StyledTitle as={motion.div} initial={{ opacity: 0, y: "50%" }} animate={controls}>
+      <MotionStyledTitle initial={{ opacity: 0, y: "50%" }} animate={controls}>
     We Chat
-    </StyledTitle>
+    </MotionStyledTitle>
     <motion.div style={{display:"flex",alignItems:"center",flexDirection:"column",margin:"0"}}
     initial={{opacity:0}}
     animate={{
