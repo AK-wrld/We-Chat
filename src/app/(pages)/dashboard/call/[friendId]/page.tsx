@@ -56,7 +56,11 @@ const CallScreen = ({params}:CallScreenProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
-
+useEffect(()=> {
+    if(recStream && recStreamRef.current) {
+        recStreamRef.current.srcObject = recStream
+    }
+},[recStream])
     useEffect(() => {
         let peer: Peer.Instance | undefined;
         if (myStream) {
