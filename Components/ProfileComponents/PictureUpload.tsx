@@ -10,6 +10,8 @@ import { bucket, db } from "../../services/firebase.config";
 import { v4 } from "uuid";
 import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { useAuth } from "../../context/AuthContext";
+import { setToast } from "../../Controllers/Controller";
+import Compressor from "compressorjs";
 const fileTypes = ["JPG", "PNG", "GIF"];
 type Props = {
   handleNext: () => void;
@@ -34,7 +36,21 @@ const PictureUpload = ({
   const {uid} = useAuth()
   const [file, setFile] = useState<null | File>(null);
   const handleChange = (file: File) => {
-    setFile(file);
+    console.log(file)
+    if(!file) return
+    if(file.size>10000000) {
+      setToast("File size should be less than 10MB","error")
+      return
+    }
+   // eslint-disable-next-line no-unused-vars
+   const compressor =  new Compressor(file,
+      {
+        quality:0.6,
+        success(result) {
+          const compressedFile = new File([result], file.name, { type: result.type });
+      setFile(compressedFile);
+        },
+      })
   };
   useEffect(() => {
     async function upload() {

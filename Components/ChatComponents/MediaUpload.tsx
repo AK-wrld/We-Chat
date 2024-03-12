@@ -23,6 +23,10 @@ const MediaUpload = ({setType,docRef,uid,setMessages,friendId,setDocRef,refer}:T
   const handleChange = (file: File) => {
     console.log(file)
     if(!file) return
+    if(file.size>10000000) {
+      setToast("File size should be less than 10MB","error")
+      return
+    }
    // eslint-disable-next-line no-unused-vars
    const compressor =  new Compressor(file,
       {

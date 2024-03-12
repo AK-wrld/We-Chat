@@ -40,6 +40,9 @@ const BasicProfile = ({handleNext,handleBack,handleReset,activeStep,steps}:Props
       setToast("Invalid Phone Number","error")
       
     }
+    else if(firstName === '') {
+      setToast("First Name is required","error")
+    }
     else {
 
       const docRef = doc(db, "user", uid);
@@ -66,6 +69,7 @@ const BasicProfile = ({handleNext,handleBack,handleReset,activeStep,steps}:Props
                 defaultValue={firstName || ''}
                 style={{minWidth:"80%"}}
                 onChange={(event) => setFirstName(event.target.value)}
+                
               />
             {/* </FormControl> */}
           </Grid>
