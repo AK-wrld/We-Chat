@@ -16,7 +16,7 @@ const ContactsSearch = ({setType,friendId,docRef,setDocRef,setMessages,uid,refer
     const [filteredArr,setFilteredArr] = useState<string[]>([])
     // eslint-disable-next-line no-unused-vars
     const [open,setOpen] = useState(false)
-    const [searchValue,setSearchValue] = useState("")
+    const [searchValue,setSearchValue] = useState<null | string>(null)
     const handleBack = ()=> {
         setFilteredArr([])
         setType("text")
@@ -33,7 +33,7 @@ const ContactsSearch = ({setType,friendId,docRef,setDocRef,setMessages,uid,refer
         },[friendId, friendsArr])
         useEffect(()=> {
             const fetchData = async () => {
-                if(searchValue!=="") {
+                if(searchValue) {
                     setFilteredArr([])
                     const val = capitalizeFirstLetter(searchValue)
                     const userRef = collection(db,"user")

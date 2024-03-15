@@ -80,7 +80,7 @@ const SignupPage = () => {
       <Avatar onClick={handleGoogleSignIn} sx={{ bgcolor: text,cursor:"pointer",marginBottom:"20px" }}><GoogleIcon/></Avatar>
      <p style={{marginBottom:"40px"}}>OR</p>
       <Stack spacing={5} style={{height:"40vh"}}>
-      <form style={{display:"flex",width:"100%",height:"100%",flexDirection: "column",justifyContent: "space-evenly",alignItems:"center",marginTop:"-50px"}}>
+      <form style={{display:"flex",width:"100%",height:"100%",flexDirection: "column",justifyContent: "space-evenly",alignItems:"center"}}>
         <FormControl>
         <MuiPhone value={muiPhone} onChange={setMuiPhone} style={{minWidth:"250px"}}/>
         </FormControl>

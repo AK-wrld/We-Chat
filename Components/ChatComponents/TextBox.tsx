@@ -7,8 +7,9 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import AudioBox from "./AudioBox";
 import { v4 } from "uuid";
 import ContactBox from "./ContactBox";
-import { Box, Typography } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
 import { TChatType } from '../../Types/user';
+import { text } from '../../StyledComponents/Global';
 type Props = {
     messages: TChatType[]|null;
     setMessages: React.Dispatch<React.SetStateAction<TChatType[]|null>>;
@@ -44,7 +45,7 @@ next={()=>fetchNext()}
 style={{ display: 'flex', flexDirection: 'column-reverse' ,overflowY:"auto",overflowX:"hidden"}} 
 inverse={true} 
 hasMore={hasMore}
-loader={<h4>Loading...</h4>}
+loader={<Box sx={{width:"100%",display:"flex",justifyContent:"center"}}><CircularProgress sx={{color:text}} /></Box>}
 scrollableTarget="scrollableDiv"
 >
     {messages && messages.length>0 ? (

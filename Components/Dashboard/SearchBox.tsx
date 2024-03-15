@@ -23,6 +23,9 @@ const SearchBox = ({ open,value,setOpen,searchContactArr,openNotis,setOpenNotis 
           setOpenNotis(false)
         }
       },[openNotis,open,setOpenNotis])
+      // useEffect(()=> {
+      //   console.log(searchContactArr)
+      // },[searchContactArr])
   return (
     <>
       <motion.div

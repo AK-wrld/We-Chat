@@ -25,6 +25,7 @@ type Props = {
 const SearchContact = ({ value, contact }: Props) => {
   const { uid: mUid } = useAuth();
   const { firstName: mFirstName, lastName: mLastName,dp:mDp } = useProfile();
+  const {setFriends} = useChat()
   const { firstName, lastName, uid, photoURL,isBlocked } = contact;
   const { friendsArr,setBlockedUsers } = useChat();
   const [blockedStatus,setBlockedStatus] = useState(false)
@@ -44,14 +45,31 @@ const SearchContact = ({ value, contact }: Props) => {
       } else {
         let unsubscribe = () => {};
         if (uid) {
+          console.log({uid})
           const reqRef = doc(db, "friendRequests", uid);
+          const friendRef = doc(db, "friends", uid);
           unsubscribe = onSnapshot(reqRef, (doc) => {
             if (doc.exists()) {
               const { requests } = doc.data();
+              
               if (requests.some((request: any) => request.uid === mUid)) {
                 setIsReqPending(true);
               } else {
-                setIsReqPending(false);
+                getDoc(friendRef).then((doc) => {
+                  if(doc.exists()) {
+                    const {friendsArr} = doc.data()
+                    console.log({friendsArr})
+                    if(!friendsArr.includes(mUid)) {
+                      setIsReqPending(false);
+                    
+                    }
+                    else {
+                      setFriends([...friendsArr,uid])
+                      setIsReqPending(null)
+                    }
+                  }
+                })
+                // setIsReqPending(false);
               }
             }
           });
@@ -62,7 +80,7 @@ const SearchContact = ({ value, contact }: Props) => {
         };
       }
     }
-  }, [uid, friendsArr, mUid]);
+  }, [uid, friendsArr, mUid, setFriends]);
 
   const handleClick = async () => {
     const reqRef = doc(db, "friendRequests", uid);
@@ -154,10 +172,10 @@ const unblock = async()=> {
             :
             !isReqPending ? (
               value === 0 ? <PersonAddIcon sx={{ pr: "10px", cursor: "pointer" }} onClick={handleClick} /> :
-                value === 1 ? <GroupAddIcon sx={{ pr: "10px", cursor: "pointer" }} onClick={handleClick} /> :
-                <AddIcCallIcon sx={{ pr: "10px", cursor: "pointer" }} onClick={handleClick} />
+                value === 1 ? <GroupAddIcon sx={{ pr: "10px", cursor: "pointer" }} onClick={()=>console.log("group clicked")} /> :
+                <AddIcCallIcon sx={{ pr: "10px", cursor: "pointer" }} onClick={()=>console.log("call clicked")} />
             ) : (
-              <MarkEmailReadIcon sx={{ pr: "10px", cursor: "pointer" }} onClick={handleClick} />
+              <MarkEmailReadIcon sx={{ pr: "10px", cursor: "pointer" }} onClick={()=>console.log("chat clicked")} />
             )}
           </motion.div>
         )}

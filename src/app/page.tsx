@@ -1,24 +1,20 @@
 "use client";
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../../context/AuthContext';
+import { getCookie } from 'cookies-next';
 
 const App = () => {
-  const { uid,loading } = useAuth();
   const router = useRouter();
 
 useEffect(() => {
-  if(loading===false) {
-    console.log(uid)
-    if (uid === '') {
+    if (!getCookie("uid")) {
       console.log("user not logged in");
       router.push("/auth/login");
-    } else {
+    } else if(window.location.href === "/" || window.location.href === "/auth/login" || window.location.href === "/auth/signup") {
       console.log("user logged in");
       router.push("/dashboard");
     }
-  }
-  }, [uid, router,loading]);
+  }, [router]);
 
 
   return (

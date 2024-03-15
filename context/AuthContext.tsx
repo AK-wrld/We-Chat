@@ -13,6 +13,7 @@ import dayjs from 'dayjs';
 
 import { useRouter } from "next/navigation";
 import { useChat } from "./ChatContext";
+import { setCookie } from "cookies-next";
 interface AuthContextProps {
   uid:string;
   loading: boolean;
@@ -49,7 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // console.log(authUser);
 
         const{uid} = authUser;
-       
+        setCookie("uid",uid,{maxAge:60*60*24*7})
         setUid(uid);
         const blockedRef = doc(db,"blockedUsers",uid)
         const blockedSnap = await getDoc(blockedRef)
@@ -78,7 +79,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setLastActive(timestamp)
           setGender(gender)
           setDoc(docRef, {timestamp: serverTimestamp()}, { merge: true }); 
-     
+          if(window.location.href === "/" || window.location.href === "/auth/login" || window.location.href === "/auth/signup")
+          router.push('/dashboard')
 
         } else {
 

@@ -40,6 +40,7 @@ const ChatScreen = ({friendId}:Props) => {
         const [docs1, docs2] = await Promise.all([getDoc(docRef1), getDoc(docRef2)]);
         if(!docs1.exists() && !docs2.exists()) {
           await setDoc(docRef1,{user1:uid,user2:friendId})
+          setHasMore(false)
         }
         else {
       const existingDocRef = docs1.exists() ? docRef1 : docRef2;
@@ -50,6 +51,7 @@ const messageDocs = await getDocs(orderedMessagesRef);
       const messages = messageDocs.docs.map(doc => doc.data() as TChatType);
       console.log(messages)
       setMessages(messages);
+      messages.length===0 && setHasMore(false)
       setLastFetchedChat(messages[messages.length-1])
         }
       };

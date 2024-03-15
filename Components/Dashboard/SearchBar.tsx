@@ -4,12 +4,14 @@ import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import { Box } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { TAuthUser } from '../../Types/user';
 
 type Props = {
     setOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    searchVal:string,
-    setSearchVal: React.Dispatch<React.SetStateAction<string>>;
-    placeholder?:string
+    searchVal:null | string,
+    setSearchVal: React.Dispatch<React.SetStateAction<null | string>>;
+    placeholder?:string,
+    setSearchContactArr?: React.Dispatch<React.SetStateAction<TAuthUser[]>>;
 }
 
 const Search = styled('div')(({ theme }) => ({
@@ -53,7 +55,12 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-const SearchBar = ({setOpen,searchVal,setSearchVal,placeholder}:Props) => {
+const SearchBar = ({setOpen,searchVal,setSearchVal,placeholder,setSearchContactArr}:Props) => {
+  const handleSearchDelete = ()=> {
+    setSearchVal("")
+
+    setSearchContactArr && setSearchContactArr([])
+  }
   return (
     <>
     <Box sx={{mt:2,width:"60%"}} >
@@ -67,11 +74,11 @@ const SearchBar = ({setOpen,searchVal,setSearchVal,placeholder}:Props) => {
               placeholder={placeholder || "Search…"}
               inputProps={{ 'aria-label': 'search' }}
               
-              value={searchVal}
+              value={searchVal || ''}
               onChange={(e)=>setSearchVal(e.target.value)}
             />
-          <SearchIconWrapper sx={{position: "absolute",right: "0px",cursor:'pointer',zIndex:10}} onClick={()=>setSearchVal('')}>
-          {searchVal.length > 0 ? <CloseIcon sx={{fontSize:"17px"}}/> : null}
+          <SearchIconWrapper sx={{position: "absolute",right: "0px",cursor:'pointer',zIndex:10}} onClick={handleSearchDelete}>
+          {searchVal && searchVal.length > 0 ? <CloseIcon sx={{fontSize:"17px"}}/> : null}
             </SearchIconWrapper>
         </Search>
       </Box>

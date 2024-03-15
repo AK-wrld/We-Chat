@@ -24,6 +24,8 @@ import { socket } from '../../../../socket';
 import Notifications from '../../../../Components/Notifications/Notifications';
 import { useChat } from '../../../../context/ChatContext';
 import { useCall } from '../../../../context/CallContext';
+import { getCookie } from 'cookies-next';
+import { useRouter } from 'next/navigation';
 
 
 type LayoutProps = {
@@ -31,6 +33,12 @@ type LayoutProps = {
   };
 
 const Layout = ({children}:LayoutProps) => {
+  const router = useRouter()
+  useEffect(()=> {
+    if(!getCookie("uid")) {
+      router.push("/auth/login")
+    }
+  },[router])
   const {incomingCall,setIncomingCall,setCaller,setCallerName,setCallerDp,setCallerSignal} = useCall()
   const [notificationSent,setNotificationSent] = useState(false)
   useEffect(() => {
@@ -89,13 +97,13 @@ const Layout = ({children}:LayoutProps) => {
   const {blockedUsers,isBlockedByArr,friendsArr,setFriendCount,setFriends} = useChat()
     const [value, setValue] = useState(0);
   const [open,setOpen] = useState(false);
-  const [searchVal,setSearchVal] = useState('');
+  const [searchVal,setSearchVal] = useState<string | null>(null);
   const [searchContactArr,setSearchContactArr] = useState<TAuthUser[]>([])
   const [friendReqArr,setFriendReqArr] = useState<TFriendRequest[]>([])
   const [openNotis,setOpenNotis] = useState(false)
   const [reqCount,setReqCount] = useState(0)
   // eslint-disable-next-line no-unused-vars
-  
+
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     // console.log(newValue)
     setValue(newValue);
@@ -153,28 +161,31 @@ const Layout = ({children}:LayoutProps) => {
   useEffect(() => {
     if(value===0) {
       const fetchData = async () => {
-        const userRef = collection(db, "user");
-        const val = capitalizeFirstLetter(searchVal);
-        const q = query(userRef, where("firstName", "==", val), where("uid", "!=", uid));
-       
-        const snapshot = await getDocs(q);
-  
-        const newData: any[] = [];
-  
-        snapshot.docs.forEach((doc) => {
-          // handle blocked requests
-          if(!isBlockedByArr.includes(doc.id))
-          if(!blockedUsers.includes(doc.id)) {
-            newData.push({ id: doc.id, ...doc.data(), isBlocked: false });
-            // console.log(newData[0].isBlocked)
-          }else {
-            console.log("didnt")
-            newData.push({ id: doc.id, ...doc.data(),isBlocked:true });
-            // console.log(newData[0].isBlocked)
-          }
-        });
-        // console.log(newData)
-        setSearchContactArr(newData);
+        if(searchVal) {
+
+          const userRef = collection(db, "user");
+          const val = capitalizeFirstLetter(searchVal);
+          const q = query(userRef, where("firstName", "==", val), where("uid", "!=", uid));
+         
+          const snapshot = await getDocs(q);
+    
+          const newData: any[] = [];
+    
+          snapshot.docs.forEach((doc) => {
+            // handle blocked requests
+            if(!isBlockedByArr.includes(doc.id))
+            if(!blockedUsers.includes(doc.id)) {
+              newData.push({ id: doc.id, ...doc.data(), isBlocked: false });
+              // console.log(newData[0].isBlocked)
+            }else {
+              console.log("didnt")
+              newData.push({ id: doc.id, ...doc.data(),isBlocked:true });
+              // console.log(newData[0].isBlocked)
+            }
+          });
+          // console.log(newData)
+          setSearchContactArr(newData);
+        }
       }
   
       fetchData();
@@ -195,7 +206,7 @@ const Layout = ({children}:LayoutProps) => {
       <Box sx={{ flexGrow: 1,height:"100px" }}>
         <Box sx={{display:"flex",alignItems:"center",justifyContent:'space-around'}}>
       <Avatar src='/logo.png'></Avatar>
-      <SearchBar setOpen={setOpen} searchVal={searchVal} setSearchVal={setSearchVal}/>
+      <SearchBar setOpen={setOpen} searchVal={searchVal} setSearchVal={setSearchVal} setSearchContactArr={setSearchContactArr}/>
       <Badge badgeContent={reqCount} color="success" sx={{cursor:"pointer"}} onClick={()=>handleNotis()}>
       <NotificationsIcon color="action" />
     </Badge>
