@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import Badge from '@mui/material/Badge';
 import Avatar from '@mui/material/Avatar';
 import { useProfile } from '../../context/ProfileContext';
+import { useChat } from '../../context/ChatContext';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -35,17 +36,19 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 }));
 
 export default function ProfileAvatar() {
-    const {dp} = useProfile();
-    const {setOpenProfile} = useProfile()
-    // React.useEffect(()=> {
-    //   console.log({openProfile})
-    // },[openProfile])
+    const {createGroup,setCreateGroup} = useChat()
+    const {setOpenProfile,dp} = useProfile()
+    
+    const handleOpenProfile = ()=> {
+      createGroup && setCreateGroup(false)
+      setOpenProfile(true)
+    }
   return (
       <StyledBadge
         overlap="circular"
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         variant="dot"
-        onClick={()=>setOpenProfile(true)}
+        onClick={handleOpenProfile}
       >
         <Avatar alt="Remy Sharp" src={dp} sx={{cursor:"pointer"}}/>
       </StyledBadge>

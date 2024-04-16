@@ -42,7 +42,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [uid, setUid] = useState("");
   const [fcmToken, setFcmToken] = useState('');
   const {setFirstName,setLastName,setEmail,setPhone,setDob,setBio,setDp,setLastActive,setGender} = useProfile();
-  const {setBlockedUsers,setIsBlockedBy} = useChat()
+  const {setBlockedUsers,setIsBlockedBy,setGroups} = useChat()
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async(authUser) => {
       setLoading(true);
@@ -67,7 +67,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         if (docSnap.exists()) {
           console.log("Document data:", docSnap.data());
-          const {firstName,lastName,email,phone,dob,bio,photoURL,timestamp,gender} = docSnap.data();
+          const {firstName,lastName,email,phone,dob,bio,photoURL,timestamp,gender,groups} = docSnap.data();
           console.log(firstName,lastName,email,phone,dob,bio,photoURL)
           setFirstName(firstName);
           setLastName(lastName);
@@ -78,6 +78,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setDp(photoURL);
           setLastActive(timestamp)
           setGender(gender)
+          setGroups(groups)
           setDoc(docRef, {timestamp: serverTimestamp()}, { merge: true }); 
           if(window.location.href === "/" || window.location.href === "/auth/login" || window.location.href === "/auth/signup")
           router.push('/dashboard')
@@ -97,7 +98,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           if(email) setEmail(email);
           if(photoURL) setDp(photoURL)
           if(phoneNumber) setPhone(phoneNumber)
-          setDoc(docRef, { email,firstName,lastName,photoURL,timestamp: serverTimestamp(),uid,bio:"",phone:phoneNumber,gender:"M" }, { merge: true });
+          setDoc(docRef, { email,firstName,lastName,photoURL,timestamp: serverTimestamp(),uid,bio:"",phone:phoneNumber,gender:"M",groups:[] }, { merge: true });
           router.push('/profile')
         }
         setLoading(false);

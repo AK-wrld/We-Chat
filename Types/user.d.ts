@@ -22,6 +22,7 @@ export type TAuthUser = {
     gender:string;
     uid:string;
     isBlocked:boolean;
+    groups: Array<string>;
   };
   export type TFriendRequest = {
     requests: [
@@ -66,4 +67,11 @@ export type TAuthUser = {
     count:number;
     friendsArr:string[];
     user:string;
+  }
+  export type TGroupType = {
+    name:string;
+    members:string[];
+    admin:string;
+    groupDp:string;
+    createdAt:string;
   }
