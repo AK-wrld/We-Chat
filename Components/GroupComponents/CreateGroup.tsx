@@ -70,14 +70,24 @@ const CreateGroup = () => {
             return
         }
         const grpRef = collection(db,"groups")
-        const res = await addDoc(grpRef,{name,dp,members,admin:uid,createdAt:serverTimestamp()})
+        const res = await addDoc(grpRef,{name,dp,members:[...members,uid],admin:uid,createdAt:serverTimestamp()})
         if(res) {
             setToast("Group Created","success")
             setGroups((prev)=> [...prev,res.id])
-            const userRef = doc(db,"user",uid)
-            const userSnap = setDoc(userRef,{groups:[...groups,res.id]},{merge:true}).then(()=> {
-                console.log("Group added to user")
-            })
+            const users = [...members,uid]
+            users.forEach(async(user)=> {
+                const userRef = doc(db,"user",user)
+                // eslint-disable-next-line no-unused-vars
+                const userSnap = setDoc(userRef,{groups:[...groups,res.id]},{merge:true}).then(()=> {
+                  console.log("Group added to user")
+              })
+            }
+            )
+            // const userRef = doc(db,"user",uid)
+            // // eslint-disable-next-line no-unused-vars
+            // const userSnap = setDoc(userRef,{groups:[...groups,res.id]},{merge:true}).then(()=> {
+            //     console.log("Group added to user")
+            // })
         }
         else {
             setToast("Something went wrong","error")
@@ -136,7 +146,7 @@ const CreateGroup = () => {
 
         {
             friendsArr && friendsArr.map((friend,index)=> {
-                return <FriendList key={friend} friendId={friend} addMembers={addMembers}/>
+                return <FriendList key={friend} friendId={friend} addNewMembers={addMembers}/>
             })
         }
         </Box>

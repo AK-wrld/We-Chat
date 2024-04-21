@@ -73,5 +73,5 @@ export type TAuthUser = {
     members:string[];
     admin:string;
     groupDp:string;
-    createdAt:string;
+    createdAt:Timestamp;
   }

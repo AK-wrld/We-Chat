@@ -29,7 +29,7 @@ const ContactPage = ({params}:ContactPageProps) => {
   return (
     <>
    {
-    !openProfile && <ChatScreen friendId={recId}/>
+    !openProfile && <ChatScreen friendId={recId} roomType={"friend"}/>
    } 
     
     <motion.div style={{height:"100%",display:"flex",flexDirection:"column"}}

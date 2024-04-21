@@ -217,3 +217,107 @@ export const fetchGroupDetails = async(groupId:string)=> {
     return null
   }
 }
+export const removeMember = async(groupId:string,uid:string)=> {
+  const groupRef = doc(db,"groups",groupId)
+  const groupSnap = await getDoc(groupRef)
+  if(groupSnap.exists()) {
+    const {members} = groupSnap.data() as TGroupType
+    const newMembers = members.filter((member)=> member !== uid)
+    return setDoc(groupRef,{members:newMembers},{merge:true}).then(async()=> {
+      const userRef = await getDoc(doc(db,"user",uid))
+        if(userRef.exists()) {
+          const {groups} = userRef.data() as TAuthUser
+          const newGroups = groups.filter((group)=> group !== groupId)
+          setDoc(doc(db,"user",uid),{groups:newGroups},{merge:true}).then(()=> {
+            return true
+          }
+          ).catch((err)=> {
+            console.log(err)
+            return false
+          }
+          )
+        }
+    }).catch((err)=> {
+      console.log(err)
+      return false
+    })
+  }
+}
+export const updateGroup = async(groupId:string,name:string,dp:string,newMembers:string[])=> {
+  const groupRef = doc(db,"groups",groupId)
+  const groupSnap = await getDoc(groupRef)
+  if(groupSnap.exists()) {
+    const {members} = groupSnap.data() as TGroupType
+    const totMembers = [...members,...newMembers]
+    return setDoc(groupRef,{groupId,name,dp,members:totMembers},{merge:true}).then(()=> {
+      newMembers.forEach(async(member)=> {
+        const userRef = doc(db,"user",member)
+        const userSnap = await getDoc(userRef)
+        if(userSnap.exists()) {
+          const {groups} = userSnap.data() as TAuthUser
+         return setDoc(userRef,{groups:[...groups,groupId]},{merge:true}).then(()=> {
+           return true
+         }
+          ).catch((err)=> {
+            console.log(err)
+            return false
+          })
+          
+        }
+      })
+    }).catch((err)=> {
+      console.log(err)
+      return false
+    })
+  }
+}
+export const leaveGroup = async(groupId:string,uid:string,newAdmin:string)=> {
+  const groupRef = doc(db,"groups",groupId)
+  const groupSnap = await getDoc(groupRef)
+  if(groupSnap.exists()) {
+    const {members} = groupSnap.data() as TGroupType
+    const newMembers = members.filter((member)=> member !== uid)
+    if(newAdmin!=='') {
+      return setDoc(groupRef,{members:newMembers,admin:newAdmin},{merge:true}).then(async()=> {
+        const userRef = await getDoc(doc(db,"user",uid))
+        if(userRef.exists()) {
+          const {groups} = userRef.data() as TAuthUser
+          const newGroups = groups.filter((group)=> group !== groupId)
+          setDoc(doc(db,"user",uid),{groups:newGroups},{merge:true}).then(()=> {
+            return true
+          }
+          ).catch((err)=> {
+            console.log(err)
+            return false
+          }
+          )
+        }
+      }).catch((err)=> {
+        console.log(err)
+        return false
+      })
+    
+    }
+    else {
+
+      return setDoc(groupRef,{members:newMembers},{merge:true}).then(async()=> {
+        const userRef = await getDoc(doc(db,"user",uid))
+        if(userRef.exists()) {
+          const {groups} = userRef.data() as TAuthUser
+          const newGroups = groups.filter((group)=> group !== groupId)
+          setDoc(doc(db,"user",uid),{groups:newGroups},{merge:true}).then(()=> {
+            return true
+          }
+          ).catch((err)=> {
+            console.log(err)
+            return false
+          }
+          )
+        }
+      }).catch((err)=> {
+        console.log(err)
+        return false
+      })
+    }
+  }
+} 

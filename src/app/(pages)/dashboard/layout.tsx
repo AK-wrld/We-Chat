@@ -77,6 +77,7 @@ const Layout = ({children}:LayoutProps) => {
         }
       }
     })
+   
     socket.on('disconnect', () => {
       console.log('Disconnected from the server');
     });
@@ -89,6 +90,7 @@ const Layout = ({children}:LayoutProps) => {
       socket.off("friend_req_unsent")
       socket.off("incoming_call")
       socket.off("busy_call")
+      
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

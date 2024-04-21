@@ -4,9 +4,9 @@ import { getUser } from '../../Controllers/Controller'
 
 type Props = {
     friendId: string,
-    addMembers : React.Dispatch<React.SetStateAction<string[]>>
+    addNewMembers : React.Dispatch<React.SetStateAction<string[]>>,
 }
-const FriendList = ({friendId,addMembers}:Props) => {
+const FriendList = ({friendId,addNewMembers}:Props) => {
     const [fFirstName,setFFirstName] = useState("")
     const [fLastName,setFLastName] = useState("")
     const [fDp,setFDp] = useState("")
@@ -25,13 +25,14 @@ const FriendList = ({friendId,addMembers}:Props) => {
         }
         fetchFriendDetails()
     },[friendId])
+
     const handleChecked = ()=> {
         setChecked(!checked)
         if(checked) {
-            addMembers((prev)=> prev.filter((id)=> id!==friendId))
+            addNewMembers((prev)=> prev.filter((id)=> id!==friendId))
         }
         else {
-            addMembers((prev)=> [...prev,friendId])
+            addNewMembers((prev)=> [...prev,friendId])
         }
     }
   return (
