@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect } from 'react'
-import ChatScreen from '../../../../../../Components/ChatComponents/ChatScreen';
 import { useProfile } from '../../../../../../context/ProfileContext';
 
 import {motion} from 'framer-motion'
@@ -11,6 +10,8 @@ import IncomingCall from '../../../../../../Components/CallComponents/IncomingCa
 import { useCall } from '../../../../../../context/CallContext';
 import { socket } from '../../../../../../socket';
 import { useChat } from '../../../../../../context/ChatContext';
+import GChatScreen from '../../../../../../Components/GroupComponents/GChatScreen';
+import CreateGroup from '../../../../../../Components/GroupComponents/CreateGroup';
 type GroupPageProps = {
   params: {
     groupId: string; // or number, or whatever type recId should be
@@ -20,7 +21,7 @@ const GroupPage = ({params}:GroupPageProps) => {
   const {groupId} = params
   const {openProfile,setOpenProfile} = useProfile()
   const {incomingCall} = useCall()
-  const {setGroupId} = useChat()
+  const {setGroupId,createGroup} = useChat()
   const variants = {
     open: {opacity:1,width:"100%"},
     closed: {opacity:0,width:"0%"}
@@ -53,9 +54,11 @@ const GroupPage = ({params}:GroupPageProps) => {
   return (
     <>
    {
-    !openProfile && <ChatScreen friendId={groupId} roomType={"group"}/>
+    !openProfile && !createGroup && <GChatScreen groupId={groupId}/>
    } 
-    
+    {
+      createGroup && <CreateGroup/>
+    }
     <motion.div style={{height:"100%",display:"flex",flexDirection:"column"}}
     initial="closed"
     animate={openProfile?"open":"closed"}

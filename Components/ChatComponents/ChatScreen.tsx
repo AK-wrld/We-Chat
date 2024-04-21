@@ -16,14 +16,11 @@ import ContactsSearch from "./ContactsSearch";
 import AudioShare from "./AudioShare";
 import TextBox from "./TextBox";
 import FriendProfile from "./FriendProfile";
-import GroupNavbar from "../GroupComponents/GroupNavbar";
-import GroupProfile from "../GroupComponents/GroupProfile";
 
 type Props = {
     friendId:string,
-    roomType:string
 }
-const ChatScreen = ({friendId,roomType}:Props) => {
+const ChatScreen = ({friendId}:Props) => {
     const {uid} = useAuth()
     const [hasMore,setHasMore] = useState(true)
     const [lastFetchedChat,setLastFetchedChat] = useState<TChatType|null>(null)
@@ -102,11 +99,9 @@ const messageDocs = await getDocs(orderedMessagesRef);
         }}
       >
         <Box sx={{ width: "100%", position: "relative" }}>
-          {roomType==="friend"?<Navbar setOpenFProfile={setOpenFProfile}/>:<GroupNavbar setOpenFProfile={setOpenFProfile}/>}
+          <Navbar setOpenFProfile={setOpenFProfile}/>
         </Box>
-        {
-          roomType==="friend"?<FriendProfile setOpenFProfile={setOpenFProfile} openFProfile={openFProfile}/>:<GroupProfile setOpenFProfile={setOpenFProfile} openFProfile={openFProfile}/>
-        }
+        <FriendProfile setOpenFProfile={setOpenFProfile} openFProfile={openFProfile}/>
         {type==='text'?
         <TextBox setMessages={setMessages} docRef={docRef} uid={uid} setLastFetchedChat={setLastFetchedChat} hasMore={hasMore} lastFetchedChat={lastFetchedChat} messages={messages} recieverColor={recieverColor} sendercolor={sendercolor} setHasMore={setHasMore}  refer={ref}/>:
         type==='media'?<MediaUpload setType={setType} docRef={docRef} uid={uid} setMessages={setMessages} setDocRef={setDocRef} friendId={friendId} refer={ref}/>

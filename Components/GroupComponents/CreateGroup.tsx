@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { StyleButton, StyledLabel, StyledSubTitle } from '../../StyledComponents/Styled'
-import { Avatar, Box, styled, Badge, Input } from '@mui/material'
+import { Avatar, Box, styled, Badge, Input, Button } from '@mui/material'
 import { FileUploader } from 'react-drag-drop-files'
 import CameraEnhanceIcon from "@mui/icons-material/CameraEnhance";
 import { setToast } from '../../Controllers/Controller'
 import Compressor from 'compressorjs'
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
+import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { bucket, db } from '../../services/firebase.config'
 import { v4 } from 'uuid'
 import { useChat } from '../../context/ChatContext';
@@ -21,9 +21,10 @@ const SmallAvatar = styled(Avatar)(({ theme }) => ({
 const CreateGroup = () => {
     const [name,setName] = useState("")
     const [dp,setDp] = useState("")
-    const {friendsArr,setGroups,groups} = useChat()
+    const {friendsArr,setGroups,groups,setCreateGroup} = useChat()
     const {uid} = useAuth()
     const [file, setFile] = useState<null | File>(null);
+    const [bucketUrl,setBucketUrl] = useState<string>("")
     // eslint-disable-next-line no-unused-vars
     const [members,addMembers] = useState<string[]>([])
     const handleChange = (file: File) => {
@@ -46,11 +47,13 @@ const CreateGroup = () => {
       useEffect(() => {
         async function upload() {
           if (file) {
-            const storageRef = ref(bucket, `Imgs/${v4()}`);
+            const generateUrl = `Imgs/${v4()}`
+            const storageRef = ref(bucket, generateUrl);
             await uploadBytes(storageRef, file).then((data) => {
               console.log(data);
               getDownloadURL(data.ref).then((url) => {
                 setDp(url);
+                setBucketUrl(generateUrl)
               });
             });
           }
@@ -74,6 +77,7 @@ const CreateGroup = () => {
         if(res) {
             setToast("Group Created","success")
             setGroups((prev)=> [...prev,res.id])
+            setCreateGroup(false)
             const users = [...members,uid]
             users.forEach(async(user)=> {
                 const userRef = doc(db,"user",user)
@@ -93,9 +97,24 @@ const CreateGroup = () => {
             setToast("Something went wrong","error")
         }
     }
+    const handleCancel = ()=> {
+      setName("")
+      addMembers([])
+      if(dp!=="") {
+        const storageRef = ref(bucket,bucketUrl);
+        deleteObject(storageRef).then(()=> {
+          setDp("")
+          setBucketUrl("")
+        }
+      ).catch((error)=> {
+          console.log(error)
+          })
+      }
+      setCreateGroup(false)
+    }
       return (
         <>
-        <Box sx={{maxWidth:"90%",margin:"auto",display:'flex',flexDirection:"column",width:"90%",gap:"40px",justifyContent:"center"}}>
+        <Box sx={{maxWidth:"90%",margin:"auto",display:'flex',flexDirection:"column",width:"90%",gap:"40px",justifyContent:"center",zIndex:2}}>
         <StyledSubTitle>Create a new Group</StyledSubTitle>
         <Box sx={{display:"flex",gap:"50px",alignItems:"center"}}>
         <FileUploader
@@ -151,7 +170,10 @@ const CreateGroup = () => {
         }
         </Box>
         </Box>
+        <Box sx={{display:"flex",gap:"20px"}}>
         <StyleButton style={{width:"25%"}} onClick={handleCreate}>Create Group</StyleButton>
+        <Button variant='outlined' color='error' onClick={handleCancel}>Cancel</Button>
+        </Box>
         </Box>
         </>
        )

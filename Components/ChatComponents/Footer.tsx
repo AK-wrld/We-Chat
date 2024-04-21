@@ -36,7 +36,9 @@ const Footer = ({openEmoji,setOpenEmoji,searchValue,setSearchValue,docRef,uid,se
     }
 
 },[disabled])
-
+useEffect(()=> {
+  console.log(docRef)
+},[docRef])
 const sendMsg = async(docRef:any,uid:string,searchValue:string,type:string)=> {
   const send:boolean = await sendMessage(docRef,uid,searchValue,type)
   if(send) {

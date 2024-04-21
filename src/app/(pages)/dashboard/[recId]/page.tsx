@@ -9,6 +9,8 @@ import { Box } from '@mui/material';
 import ProfilePreview from '../../../../../Components/ProfileComponents/ProfilePreview';
 import IncomingCall from '../../../../../Components/CallComponents/IncomingCall';
 import { useCall } from '../../../../../context/CallContext';
+import CreateGroup from '../../../../../Components/GroupComponents/CreateGroup';
+import { useChat } from '../../../../../context/ChatContext';
 type ContactPageProps = {
   params: {
     recId: string; // or number, or whatever type recId should be
@@ -18,6 +20,7 @@ const ContactPage = ({params}:ContactPageProps) => {
   const {recId} = params
   const {openProfile,setOpenProfile} = useProfile()
   const {incomingCall} = useCall()
+  const {createGroup} = useChat()
   const variants = {
     open: {opacity:1,width:"100%"},
     closed: {opacity:0,width:"0%"}
@@ -26,12 +29,17 @@ const ContactPage = ({params}:ContactPageProps) => {
     setOpenProfile(false)
   
   },[recId, setOpenProfile])
+  useEffect(()=> {
+    console.log(recId)
+  },[recId])
   return (
     <>
    {
-    !openProfile && <ChatScreen friendId={recId} roomType={"friend"}/>
+    !openProfile && !createGroup && <ChatScreen friendId={recId}/>
    } 
-    
+    {
+      createGroup && <CreateGroup/>
+    }
     <motion.div style={{height:"100%",display:"flex",flexDirection:"column"}}
     initial="closed"
     animate={openProfile?"open":"closed"}

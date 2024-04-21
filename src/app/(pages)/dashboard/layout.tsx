@@ -204,7 +204,7 @@ const Layout = ({children}:LayoutProps) => {
   return (
     <>
         <Grid container>
-    <Grid item xs={4} >
+    <Grid item xs={4} sx={{maxHeight:"100vh",overflow:"auto"}} >
       <Box sx={{ flexGrow: 1,height:"100px" }}>
         <Box sx={{display:"flex",alignItems:"center",justifyContent:'space-around'}}>
       <Avatar src='/logo.png'></Avatar>

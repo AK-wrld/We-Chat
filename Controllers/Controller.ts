@@ -148,6 +148,7 @@ return messages
 }
 
 export const sendMessage = async (docRef:any,from:string,content:string,type:string): Promise<boolean>=> {
+  console.log({docRef})
   const messageRef = collection(docRef,"messages")
   
   const message = {
