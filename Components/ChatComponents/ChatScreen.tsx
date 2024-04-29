@@ -84,6 +84,7 @@ const messageDocs = await getDocs(orderedMessagesRef);
     return ()=> {
       socket.off("add_message")
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   return (

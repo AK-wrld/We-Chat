@@ -23,6 +23,7 @@ const Groups = () => {
     }
     }
     getGroups()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
   const handleOpenGroup = ()=> {
     openProfile && setOpenProfile(false)

@@ -78,6 +78,7 @@ export default function SearchAppBar({setOpenFProfile,friendId}:Props) {
       socket.off("typing")
       socket.off("notTyping")
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
   return (
     <Box sx={{ flexGrow: 1 }}>

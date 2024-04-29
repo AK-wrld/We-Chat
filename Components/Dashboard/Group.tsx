@@ -49,6 +49,7 @@ const Group = ({groupId}:Props) => {
     return ()=> {
       socket.off('group_list_updated')
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
   return (
     <Box component={Link} href={{pathname:`/dashboard/groups/${groupId}`,query:{gName,gAdmin,gCreatedAt,gDp}}} passHref sx={{color:`${label}`,textDecoration:"none",width:"100%",display:"flex",zIndex:3,alignItems:"center",height:"8vh",cursor:"pointer",borderRadius:"10px",'&:hover': { backgroundColor: `${primary}`,transition:"all 0.2s" }}}>

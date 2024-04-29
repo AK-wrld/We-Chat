@@ -49,7 +49,7 @@ const ChatScreenPreview = () => {
         }}
       >
         <Box sx={{ width: "100%", position: "relative" }}>
-          <Navbar setOpenFProfile={()=>{}}/>
+          <Navbar setOpenFProfile={()=>{}} friendId=""/>
         </Box>
         <Box ref={ref} sx={{ height: "85vh", overflowY: "scroll",overflowX:"hidden",overflowAnchor:"none" }}>
           {messages ? (

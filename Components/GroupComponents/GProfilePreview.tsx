@@ -53,6 +53,7 @@ const GProfilePreview = () => {
             // const added = friendsArr.filter((friend)=> members.includes(friend))
             // setAddedFriends(added)
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[members])
     const handleChange = (file: File) => {
         console.log(file)
@@ -140,6 +141,7 @@ const GProfilePreview = () => {
         socket.off('group_updated')
         socket.off('member_removed')
       }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
   return (
     <>
