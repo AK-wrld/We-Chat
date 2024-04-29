@@ -70,14 +70,16 @@ const messageDocs = await getDocs(orderedMessagesRef);
   // },[messages])
 
   useEffect(()=>{
-    socket.on("add_message",(data)=> {
-      console.log(data)
+    socket.on("add_message",(data:TChatType)=> {
+      // console.log(data.from,friendId)
+      if(data.from === friendId) {
       if (!(data.timestamp instanceof Timestamp)) {
         console.log("not instance of timestamp")
         data.timestamp = Timestamp.fromDate(new Date())
       }
       console.log(data)
       setMessages(prevMessages => prevMessages ? [data,...prevMessages] : [data]);
+    }
     })
     return ()=> {
       socket.off("add_message")
@@ -99,7 +101,7 @@ const messageDocs = await getDocs(orderedMessagesRef);
         }}
       >
         <Box sx={{ width: "100%", position: "relative" }}>
-          <Navbar setOpenFProfile={setOpenFProfile}/>
+          <Navbar setOpenFProfile={setOpenFProfile} friendId={friendId}/>
         </Box>
         <FriendProfile setOpenFProfile={setOpenFProfile} openFProfile={openFProfile}/>
         {type==='text'?

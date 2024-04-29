@@ -14,6 +14,7 @@ import { Avatar } from '@mui/material';
 import { socket } from '../../socket';
 type Props ={
   setOpenFProfile:React.Dispatch<React.SetStateAction<boolean>>;
+  friendId:string;
 }
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -57,19 +58,21 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function SearchAppBar({setOpenFProfile}:Props) {
+export default function SearchAppBar({setOpenFProfile,friendId}:Props) {
   const searchParams = useSearchParams()
   const [typing, isTyping] = React.useState(false)
   React.useEffect(()=> {
     console.log(typing)
   },[typing])
   React.useEffect(()=>{
-    socket.on("typing",()=> {
-      console.log("typing")
+    socket.on("typing",(data:any)=> {
+      console.log("typing",data)
+      if(data.msgSentBy===friendId){
       isTyping(true)
+    }
     })
-    socket.on("not_typing",()=> {
-      isTyping(false)
+    socket.on("not_typing",(data)=> {
+      if(data.msgSentBy===friendId) isTyping(false)
     })
     return ()=> {
       socket.off("typing")

@@ -54,7 +54,7 @@ const sendMsg = async(docRef:any,uid:string,searchValue:string,type:string)=> {
     refer.current?.scrollTo(0,refer.current?.scrollHeight)
     if(socket.connected) {
       socket.emit("send_message",{uid:friendId,message})
-      socket.emit("notTyping",{uid:friendId})
+      socket.emit("notTyping",{uid:friendId,msgSentBy:uid})
     }
     setSearchValue("")
   }
@@ -80,10 +80,10 @@ const setSearch = (value:string) => {
   setSearchValue(value)
   if(socket.connected) {
     if(value.length!==0) {
-    socket.emit("isTyping",{uid:friendId})
+    socket.emit("isTyping",{uid:friendId,msgSentBy:uid})
     }
     else {
-      socket.emit("notTyping",{uid:friendId})
+      socket.emit("notTyping",{uid:friendId,msgSentBy:uid})
     }
   }
 }
