@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useProfile } from '../../context/ProfileContext'
 import { StyledLabel,StyledText } from '../../StyledComponents/Styled';
 import dayjs from 'dayjs';
-import { errorColor, primary } from '../../StyledComponents/Global';
+import { primary } from '../../StyledComponents/Global';
 import InfoIcon from '@mui/icons-material/Info';
 import CakeIcon from '@mui/icons-material/Cake';
 import PhoneIcon from '@mui/icons-material/Phone';
