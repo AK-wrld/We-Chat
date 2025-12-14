@@ -6,15 +6,12 @@ import { getCookie } from 'cookies-next';
 const App = () => {
   const router = useRouter();
 
-useEffect(() => {
-    if (!getCookie("uid")) {
-      console.log("user not logged in");
-      router.push("/auth/login");
-    } else if(window.location.href === "/" || window.location.href === "/auth/login" || window.location.href === "/auth/signup") {
-      console.log("user logged in");
-      router.push("/dashboard");
-    }
-  }, [router]);
+// useEffect(() => {
+//   if (!getCookie("uid")) {
+//     console.log("user not logged in");
+//     router.push("/auth/login");
+//   }
+//   }, [router]);
 
 
   return (

@@ -7,18 +7,20 @@ import React, {
   ReactNode,
 } from "react";
 import { auth, db } from "../services/firebase.config";
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { useProfile } from "./ProfileContext";
 import dayjs from 'dayjs';
 
 import { useRouter } from "next/navigation";
 import { useChat } from "./ChatContext";
-import { setCookie } from "cookies-next";
+import { getCookie, setCookie } from "cookies-next";
+import { signOut } from "firebase/auth";
 interface AuthContextProps {
   uid:string;
   loading: boolean;
   fcmToken:string,
   setFcmToken: React.Dispatch<React.SetStateAction<string>>;
+  signOutUser: ()=> void
 }
 
 interface AuthProviderProps {
@@ -29,7 +31,8 @@ const AuthContext = createContext<AuthContextProps>({
   uid: "",
   loading: true,
   fcmToken:"",
-  setFcmToken:()=>{}
+  setFcmToken:()=>{},
+  signOutUser: ()=>{}
 });
 
 export const useAuth = () => {
@@ -43,12 +46,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [fcmToken, setFcmToken] = useState('');
   const {setFirstName,setLastName,setEmail,setPhone,setDob,setBio,setDp,setLastActive,setGender} = useProfile();
   const {setBlockedUsers,setIsBlockedBy,setGroups} = useChat()
+  const signOutUser = ()=> {
+    signOut(auth).then(()=>{
+      setFirstName('')
+      setLastName('')
+      setEmail('')
+      setPhone('')
+      setBio('')
+      setDob(dayjs())
+      setDp('')
+      setLastActive('')
+      setGender('')
+      setBlockedUsers([])
+      setIsBlockedBy([])
+      setGroups([])
+      router.push("/auth/login");
+    })
+  }
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async(authUser) => {
       setLoading(true);
       if (authUser) {
-        // console.log(authUser);
-
+        console.log(authUser);
+       
         const{uid} = authUser;
         setCookie("uid",uid,{maxAge:60*60*24*7})
         setUid(uid);
@@ -80,7 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setGender(gender)
           setGroups(groups)
           setDoc(docRef, {timestamp: serverTimestamp()}, { merge: true }); 
-          if(window.location.href === "/" || window.location.href === "/auth/login" || window.location.href === "/auth/signup")
+          if(window.location.pathname === "/" || window.location.pathname === "/auth/login" || window.location.pathname === "/auth/signup")
           router.push('/dashboard')
 
         } else {
@@ -104,16 +124,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setLoading(false);
       } else {
         setLoading(false);
+        router.push("/auth/login");
       }
     });
-
+    
     return () => unsubscribe();
   }, [setBio, setDob, setDp, setEmail, setFirstName, setLastName, setPhone, setLastActive, setGender]);
-      useEffect(()=> {
-    console.log(uid)
-  },[uid])
+      
   return (
-    <AuthContext.Provider value={{loading,uid,fcmToken,setFcmToken }}>
+    <AuthContext.Provider value={{loading,uid,fcmToken,setFcmToken,signOutUser }}>
       {children}
     </AuthContext.Provider>
   );

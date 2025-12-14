@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useProfile } from '../../context/ProfileContext'
 import { StyledLabel,StyledText } from '../../StyledComponents/Styled';
 import dayjs from 'dayjs';
-import { primary } from '../../StyledComponents/Global';
+import { errorColor, primary } from '../../StyledComponents/Global';
 import InfoIcon from '@mui/icons-material/Info';
 import CakeIcon from '@mui/icons-material/Cake';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -12,8 +12,10 @@ import BlockIcon from '@mui/icons-material/Block';
 import EditIcon from '@mui/icons-material/Edit';
 import { useRouter } from 'next/navigation';
 import BlockedUsersList from '../BlockedComponents/BlockedUsersList';
+import { useAuth } from '../../context/AuthContext';
 const ProfilePreview = () => {
     const {dp,firstName,lastName,bio,dob,phone,email,gender} = useProfile();
+    const {signOutUser} = useAuth()
     const router = useRouter()
     const [disabled,setDisabled] = useState(false)
     const [showBlockedUsers,setShowBlockedUsers] = useState(false)
@@ -34,7 +36,10 @@ const ProfilePreview = () => {
         <Box sx={{clipPath: "polygon(0% 63%, 33% 88%, 100% 51%, 100% 0, 0 0);",width:"100%",backgroundColor: "rgb(63,150,234)",background: "linear-gradient(90deg, rgba(63,150,234,1) 0%, rgba(44,189,229,1) 44%, rgba(19,220,223,1) 100%)",height:"200px",borderRadius:"39px",border:"5px inset #00ffd4",position:"relative"}}>
 
         <Grid item sx={{width:"100%",padding:"20px",mt:1}}>
+                <Box sx={{display:"flex",justifyContent:"space-between"}}>
                 <StyledLabel style={{textAlign:'center',fontSize:"20px",fontWeight:"bolder",width:'fit-content',color:primary}}>{firstName} {lastName}</StyledLabel>
+                <StyledLabel style={{textAlign:'center',fontSize:"14px",width:'fit-content',color:"#ea7272",cursor:"pointer"}} onClick={()=>signOutUser()}>Logout</StyledLabel>
+                </Box>
                 <StyledLabel style={{textAlign:'center',fontSize:"16px",width:'fit-content',color:primary}}>{email}</StyledLabel>
                 <Box mt={1}>
                 <Button onClick={()=>setShowBlockedUsers(true)} disabled={disabled} variant="outlined" sx={{marginRight:"5px",lineHeight:"1.5",color:"lightgray",width:"90px",borderRadius:"10px",fontSize:"8px",borderColor:"lightGray",":hover":{borderColor:"lightgray"}}} startIcon={<BlockIcon/>}>Blocked Users</Button>
